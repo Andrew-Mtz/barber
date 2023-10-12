@@ -1,0 +1,80 @@
+.barber-card {
+  position: relative;
+  overflow: hidden;
+  transition: max-width 0.3s ease-in-out, max-height 0.3s ease-in-out, transform 0.3s ease-in-out;
+  max-width: 350px;
+  background-color: #fff;
+  border-radius: 10px;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+}
+
+.barber-card.expanded {
+  max-width: 80%;
+  transform: translateX(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  display: flex;
+}
+
+.barber-expanded {
+  padding: 1.5em;
+  width: fit-content;
+  text-align: start;
+  background-color: #fff;
+}
+
+.barber-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  overflow: auto;
+  height: 250px;
+}
+
+.expand-button {
+  position: absolute;
+  background-color: #fff;
+  opacity: 70%;
+  border-radius: 50%;
+  right: 10px;
+  top: 10px;
+  z-index: 2;
+  transform: rotate(-90deg);
+}
+
+@media (max-width: 768px) {
+  /* Estilo específico para pantallas más pequeñas (teléfonos celulares) */
+
+  .barber-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .barber-card.expanded {
+    max-width: 350px;
+  }
+
+  .barber-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .barber-expanded>.barber-gallery>.media-item {
+    width: 100%;
+  }
+
+  .expand-button {
+    transform: none;
+    /* Quita la transformación en dispositivos móviles */
+  }
+}
+
+@media (min-width: 768px) {
+  .barber-expanded>.barber-gallery>.media-item {
+    width: 250px;
+    cursor: pointer;
+  }
+}
