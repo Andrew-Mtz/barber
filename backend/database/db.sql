@@ -32,7 +32,7 @@ CREATE TABLE haircuts (
 CREATE TABLE barber_haircuts (
   barber_id INTEGER NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
   haircut_id INTEGER NOT NULL REFERENCES haircuts(id) ON DELETE CASCADE,
-  PRIMARY KEY (barber_id, haircut_id),
+  PRIMARY KEY (barber_id, haircut_id)
 );
 CREATE TABLE schedules (
   id SERIAL PRIMARY KEY,
@@ -134,7 +134,13 @@ VALUES (
     'Corte de cabello',
     300.00,
     'Asesoramiento, corte de cabello'
-  );
+);
+INSERT INTO haircuts (name, price, description)
+VALUES (
+    'Mechitas',
+    1000.00,
+    'Corte + mechas de color'
+);
 -- Agregar el día 31 de este mes a la tabla "horarios"
 INSERT INTO schedules (date, barber_id)
 VALUES ('2023-08-13', 1);
@@ -163,7 +169,7 @@ VALUES (2, 1);
 INSERT INTO barber_haircuts (barber_id, haircut_id)
 VALUES (2, 2);
 INSERT INTO barber_haircuts (barber_id, haircut_id)
-VALUES (2, 3);
+VALUES (3, 1);
 
 -- Function to create the associated review when a booking is created
 CREATE OR REPLACE FUNCTION create_initial_review()
