@@ -7,8 +7,6 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Box, Button, Paper, Typography } from '@mui/material';
 
 const baseUrl = process.env.REACT_APP_BASEURL
-const headers = new Headers();
-headers.append('ngrok-skip-browser-warning', 'true');
 
 const Calendar = ({ onScheduleSelect, selectedId, selectedBarberId }) => {
   const [value, setValue] = React.useState(dayjs());
@@ -30,7 +28,10 @@ const Calendar = ({ onScheduleSelect, selectedId, selectedBarberId }) => {
       const selectedDate = newValue.format("YYYY-MM-DD");
       const response = await fetch(`${baseUrl}/available-schedule-by-date?date=${selectedDate}&barber_id=${selectedBarberId}`, {
         method: 'get',
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
       if (response.status === 404) {
         setValue(newValue);

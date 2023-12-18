@@ -54,7 +54,7 @@ const ContactForm = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true'
+          'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
       });

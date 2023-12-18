@@ -17,8 +17,8 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [isBarber, setIsBarber] = React.useState(false);
-  const startHour = '11:00';
-  const endHour = '11:00';
+/*   const startHour = '11:00';
+  const endHour = '11:00'; */
 
   const checkToken = async () => {
     try {
@@ -27,6 +27,7 @@ const App = () => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`
         }
       });

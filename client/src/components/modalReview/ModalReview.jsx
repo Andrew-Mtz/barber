@@ -21,7 +21,7 @@ const ModalReview = ({ review_id, open, formData, setFormData, handleClose }) =>
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'Accept': 'application/json'
         }
       });
       if (response.status === 409) {

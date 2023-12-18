@@ -2,8 +2,6 @@ import React from 'react'
 import BarbersCarousel from '../components/barbers/carousel/BarbersCarousel ';
 
 const baseUrl = process.env.REACT_APP_BASEURL
-const headers = new Headers();
-headers.append('ngrok-skip-browser-warning', 'true');
 
 const OurTeam = () => {
   const [barbers, setBarbers] = React.useState(null)
@@ -16,7 +14,10 @@ const OurTeam = () => {
     try {
       const response = await fetch(`${baseUrl}/barber`, {
         method: 'get',
-        headers: headers
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
       if (response.status === 404) {
         setBarbers(response.statusText)

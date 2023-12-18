@@ -4,8 +4,6 @@ import BarberItem from './BarberItem'; // Importa tu componente BarberCard
 import { useLocation } from 'react-router-dom';
 
 const baseUrl = process.env.REACT_APP_BASEURL
-const headers = new Headers();
-headers.append('ngrok-skip-browser-warning', 'true');
 
 const BarbersCarousel = ({ barbers }) => {
   const location = useLocation();
@@ -21,7 +19,10 @@ const BarbersCarousel = ({ barbers }) => {
     try {
       const response = await fetch(`${baseUrl}/reviews-by-barber?barber_id=${id}`, {
         method: 'get',
-        headers: headers
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
       if (response.status === 404) {
         setReviews(response.statusText)
@@ -41,7 +42,8 @@ const BarbersCarousel = ({ barbers }) => {
         method: 'get',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       if (response.status === 404) {

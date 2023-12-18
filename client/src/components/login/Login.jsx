@@ -36,8 +36,8 @@ const Login = ({ checkAuth }) => {
       const response = await fetch(`${baseUrl}/login`, {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          'ngrok-skip-browser-warning': 'true'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(body)
       })

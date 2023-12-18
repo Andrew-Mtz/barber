@@ -11,8 +11,6 @@ const boxStyle = {
 }
 
 const baseUrl = process.env.REACT_APP_BASEURL
-const headers = new Headers();
-headers.append('ngrok-skip-browser-warning', 'true');
 
 const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
   const [haircuts, setHaircuts] = React.useState(null)
@@ -25,7 +23,10 @@ const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
     try {
       const response = await fetch(`${baseUrl}/haircut-by-barber?barber_id=${selectedBarberId}`, {
         method: 'get',
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
       if (response.status === 404) {
         setHaircuts(response.statusText)

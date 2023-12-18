@@ -4,8 +4,6 @@ import { Box } from '@mui/material';
 import './reviews.css'
 
 const baseUrl = process.env.REACT_APP_BASEURL
-const headers = new Headers();
-headers.append('ngrok-skip-browser-warning', 'true');
 
 const Reviews = () => {
   const [reviews, setReviews] = React.useState([]);
@@ -14,7 +12,10 @@ const Reviews = () => {
     try {
       const response = await fetch(`${baseUrl}/reviews`, {
         method: 'get',
-        headers: headers
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
       if (response.status === 404) {
         setReviews(response.statusText)

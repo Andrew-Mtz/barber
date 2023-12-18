@@ -63,7 +63,8 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
         method: "PUT",
         headers:
         {
-          "content-type": "application/json",
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(body)
@@ -98,8 +99,8 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
         }
       });
       const dataResponse = await response.json();

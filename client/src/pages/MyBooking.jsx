@@ -43,7 +43,8 @@ const MyBooking = ({ isLoggedIn }) => {
         method: 'get',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       const dataResponse = await response.json();
@@ -72,7 +73,8 @@ const MyBooking = ({ isLoggedIn }) => {
         method: 'get',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       const dataResponse = await response.json();
@@ -101,7 +103,8 @@ const MyBooking = ({ isLoggedIn }) => {
         method: 'delete',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       });
       getMyBooking()
