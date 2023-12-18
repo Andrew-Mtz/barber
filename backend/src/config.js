@@ -9,5 +9,5 @@ export const db = {
   database: process.env.DB_DATABASE
 }
 
-export const FRONTEND_URL = 'http://localhost:3000'
+export const FRONTEND_URL = process.env.FRONTEND_URL
 export const PORT = 8080
