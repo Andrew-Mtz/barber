@@ -4,7 +4,7 @@ import { db } from './config.js';
 const { Pool } = pkg;
 
 const pool = new Pool({
-  user: db.user,
+  user: db.user, 
   password: db.password,
   port: db.port,
   host: db.host,

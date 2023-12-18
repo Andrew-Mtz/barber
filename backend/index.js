@@ -1,5 +1,4 @@
-import express, { json } from "express";
-import morgan from "morgan";
+import express from "express";
 import cors from 'cors';
 import { FRONTEND_URL } from './config.js';
 
@@ -12,8 +11,6 @@ import userRoutes from "./routes/user.routes.js";
 import jwtAuth from "./routes/jwtAuth.routes.js";
 import contactRoutes from "./routes/contact.routes.js";
 import reviewRoutes from "./routes/reviews.routes.js";
-import cronUpdateBooking from "./cronTasks/reservationUpdater.js";
-import cronBookingReminder from "./cronTasks/haircutReminder.js";
 
 const app = express()
 
@@ -24,8 +21,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(morgan('dev'))
-app.use(json())
 
 //ROUTES//
 app.use(bookingRoutes)
@@ -40,8 +35,6 @@ app.use(reviewRoutes)
 //Register and Login routes//
 app.use(jwtAuth)
 
-cronUpdateBooking();
-cronBookingReminder();
-
-app.listen(8080, 'localhost')
-console.log('Server on port 8080')
+app.listen(3000, ()=> {
+  console.log('Server started on port 3000')
+})
