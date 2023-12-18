@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import cors from 'cors';
 import { FRONTEND_URL } from './config.js';
 
@@ -21,6 +21,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(json())
 
 //ROUTES//
 app.use(bookingRoutes)
@@ -35,6 +36,6 @@ app.use(reviewRoutes)
 //Register and Login routes//
 app.use(jwtAuth)
 
-app.listen(3000, ()=> {
+app.listen(8080, ()=> {
   console.log('Server started on port 3000')
 })
