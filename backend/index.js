@@ -1,7 +1,7 @@
 import express, { json } from "express";
 import morgan from "morgan";
 import cors from 'cors';
-import { FRONTEND_URL, PORT } from './config.js';
+import { FRONTEND_URL } from './config.js';
 
 import scheduleRoutes from "./routes/schedule.routes.js";
 import availableScheduleRoutes from "./routes/availableSchedule.routes.js";
@@ -43,5 +43,5 @@ app.use(jwtAuth)
 cronUpdateBooking();
 cronBookingReminder();
 
-app.listen(PORT, 'localhost')
+app.listen(8080, 'localhost')
 console.log('Server on port 8080')
