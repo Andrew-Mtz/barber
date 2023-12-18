@@ -1,0 +1,55 @@
+.card-booking {
+  border-radius: 10px;
+  margin: 20px 0px 50px 0px;
+}
+
+.container-booking {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 1.25rem 1rem 1rem 1rem;
+}
+
+.user-avatar-image {
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  margin-bottom: 10px;
+}
+
+.right-booking-text {
+  text-align: end;
+}
+
+.container-booking-text {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.continue-booking-left {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+}
+
+.continue-booking-right {
+  color: #6B7280;
+  font-size: 0.875rem;
+  line-height: 2.5rem;
+}
+
+.continue-booking-btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  margin: 0.75rem 1rem;
+}

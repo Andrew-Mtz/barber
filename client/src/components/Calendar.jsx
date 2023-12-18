@@ -6,7 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Box, Button, Paper, Typography } from '@mui/material';
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 const headers = new Headers();
 headers.append('ngrok-skip-browser-warning', 'true');
 
@@ -27,7 +27,7 @@ const Calendar = ({ onScheduleSelect, selectedId, selectedBarberId }) => {
 
   const handleDateChange = async (newValue) => {
     try {
-      const selectedDate = newValue.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+      const selectedDate = newValue.format("YYYY-MM-DD");
       const response = await fetch(`${baseUrl}/available-schedule-by-date?date=${selectedDate}&barber_id=${selectedBarberId}`, {
         method: 'get',
         headers: headers,
@@ -95,7 +95,7 @@ const Calendar = ({ onScheduleSelect, selectedId, selectedBarberId }) => {
                   <Button
                     variant={schedule.id === selectedId ? "contained" : "outlined"}
                     sx={buttonStyle}
-                    onClick={() => onScheduleSelect(schedule.id, selectedDateData.id)}
+                    onClick={() => onScheduleSelect(schedule.id, selectedDateData.id, value, schedule.hour)}
                   >{schedule.hour}
                   </Button>
                 </Box>

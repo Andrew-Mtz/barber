@@ -5,14 +5,10 @@ import ContactForm from '../components/contact/ContactForm'
 
 const Contact = ({ isLoggedIn }) => {
 
-const containerForm = {
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'center',
-  flexDirection: 'column',
-  backgroundColor: 'transparent',
-  borderRadius: '10px',
-}
+  const containerForm = {
+    backgroundColor: 'transparent',
+    height: '80vh',
+  }
 
   return (
     <Paper sx={containerForm}>

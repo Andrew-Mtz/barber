@@ -6,30 +6,150 @@ import SchoolIcon from '@mui/icons-material/School';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useNavigate } from 'react-router-dom'
 import InfoCard from '../components/InfoCard';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './home.css'
+gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
 
-  /* React.useEffect(() => {
-    createSchedules()
-  }, [])
-
-  const createSchedules = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/schedule`, {
-        method: 'post',
+  React.useEffect(() => {
+    const infoCardsAnimation = gsap.fromTo('.container-text', { scale: 0.5, opacity: 0 }, {
+      scale: 1,
+      opacity: 1,
+      duration: 5,
+      scrollTrigger: {
+        trigger: '.container-text',
+        toggleActions: 'restart play reverse play',
+        start: '-250px center',
+        end: 'top center',
+        scrub: 2
+      }
+    });
+    const welcomeTextAnimation = gsap.fromTo('.welcome-text', { x: 0, opacity: 1 }, {
+      x: -300, opacity: 0, scrollTrigger: {
+        toggleActions: 'restart play reverse play',
+        start: '20% center',
+        end: '30% center',
+        scrub: true,
+      }
+    });
+    const glitchTextAnimation = gsap.fromTo('.glitch', { x: 0 }, {
+      x: '-50%', y: '50%', scrollTrigger: {
+        toggleActions: 'restart play reverse play',
+        start: '20% center',
+        end: '35% center',
+        scrub: true,
+      }
+    });
+    const leftText = gsap.fromTo('.divider-and-text', { x: '-100%', opacity: 0 }, {
+      x: 0, opacity: 1, scrollTrigger: {
+        toggleActions: 'restart play reverse play',
+        start: '75% 90%',
+        end: '85% 90%',
+        scrub: 2,
+      }
+    });
+    const leftBtn = gsap.fromTo('.left-action-btn', { x: '200%', opacity: 0 }, {
+      x: 0, opacity: 1, scrollTrigger: {
+        toggleActions: 'restart play reverse play',
+        start: '75% 90%',
+        end: '85% 90%',
+        scrub: 2,
+      }
+    });
+    const rightText = gsap.fromTo('.text-and-divider', { x: '100%', opacity: 0 }, {
+      x: 0, opacity: 1, scrollTrigger: {
+        toggleActions: 'restart play reverse play',
+        start: '85% 90%',
+        end: '95% 90%',
+        scrub: 2,
+      }
+    });
+    const rightBtn = gsap.fromTo('.right-action-btn', { x: '-200%', opacity: 0 }, {
+      x: 0, opacity: 1, scrollTrigger: {
+        toggleActions: 'restart play reverse play',
+        start: '85% 90%',
+        end: '95% 90%',
+        scrub: 2,
+      }
+    });
+    if (window.innerWidth < 768) {
+      infoCardsAnimation.kill()
+      welcomeTextAnimation.kill()
+      glitchTextAnimation.kill()
+      leftText.kill()
+      leftBtn.kill()
+      rightText.kill()
+      rightBtn.kill()
+      gsap.fromTo('.container-text', { scale: 0.3, opacity: 0 }, {
+        scale: 0.8,
+        opacity: 1,
+        duration: 5,
+        scrollTrigger: {
+          trigger: '.container-text',
+          toggleActions: 'restart play reverse play',
+          start: '-450px 60%',
+          end: 'top 60%',
+          scrub: 2
+        }
+      })
+      gsap.fromTo('.welcome-text', { opacity: 1 }, {
+        y: -300, opacity: 0, scrollTrigger: {
+          toggleActions: 'restart play reverse play',
+          start: '10% 40%',
+          end: '25% 40%',
+          scrub: 2,
+        }
       });
-    } catch (error) {
-      console.error('Error al obtener las reservas:', error);
+      gsap.fromTo('.glitch', { y: '-90%' }, {
+        y: '50%', scrollTrigger: {
+          toggleActions: 'restart play reverse play',
+          start: '10% 40%',
+          end: '25% 40%',
+          scrub: 2,
+        }
+      });
+      gsap.fromTo('.divider-and-text', { x: '-50%', opacity: 0 }, {
+        x: 0, opacity: 1, scrollTrigger: {
+          toggleActions: 'restart play reverse play',
+          start: '65% 90%',
+          end: '75% 90%',
+          scrub: 2,
+        }
+      });
+      gsap.fromTo('.left-action-btn', { x: '50%', opacity: 0 }, {
+        x: 0, opacity: 1, scrollTrigger: {
+          toggleActions: 'restart play reverse play',
+          start: '65% 90%',
+          end: '75% 90%',
+          scrub: 2,
+        }
+      });
+      gsap.fromTo('.text-and-divider', { x: '50%', opacity: 0 }, {
+        x: 0, opacity: 1, scrollTrigger: {
+          toggleActions: 'restart play reverse play',
+          start: '85% 90%',
+          end: '90% 90%',
+          scrub: 2,
+        }
+      });
+      gsap.fromTo('.right-action-btn', { x: '-50%', opacity: 0 }, {
+        x: 0, opacity: 1, scrollTrigger: {
+          toggleActions: 'restart play reverse play',
+          start: '85% 90%',
+          end: '95% 90%',
+          scrub: 2,
+        }
+      });
     }
-  } */
+  }, []);
 
   const navigate = useNavigate()
 
   const scrollDown = () => {
     const section2 = document.getElementById('section2');
     const section2Position = section2.offsetTop;
-    console.log(section2Position)
     window.scrollTo({
       top: section2Position - 100,
       behavior: "smooth",
@@ -67,12 +187,14 @@ const Home = () => {
         <Box id='section2' className={'background-section'}>
           <Typography variant='h1' className='center-text'>Nuestros servicios</Typography>
           <Box className={'container-left-text'}>
-            <Divider orientation="vertical" flexItem className={'vertical-divider-blue'} />
-            <Typography variant='subtitle1' className={'left-text'}>
-              En nuestra barbería, los cortes de pelo son una verdadera expresión de arte. Nuestros talentosos barberos dominan una amplia variedad de estilos, desde los clásicos atemporales hasta las tendencias más vanguardistas.
-              Cada corte es realizado con precisión y dedicación para resaltar tus rasgos faciales y realzar tu estilo único. Además, te ofrecemos asesoramiento personalizado para encontrar el corte perfecto que se adapte a tu personalidad, tipo de cabello y preferencias.
-              Déjanos cuidar de tu cabello y experimenta la confianza que proviene de lucir un corte impecable.
-            </Typography>
+            <Box className={'divider-and-text'}>
+              <Divider orientation="vertical" flexItem className={'vertical-divider-blue'} />
+              <Typography variant='subtitle1' className={'left-text'}>
+                En nuestra barbería, los cortes de pelo son una verdadera expresión de arte. Nuestros talentosos barberos dominan una amplia variedad de estilos, desde los clásicos atemporales hasta las tendencias más vanguardistas.
+                Cada corte es realizado con precisión y dedicación para resaltar tus rasgos faciales y realzar tu estilo único. Además, te ofrecemos asesoramiento personalizado para encontrar el corte perfecto que se adapte a tu personalidad, tipo de cabello y preferencias.
+                Déjanos cuidar de tu cabello y experimenta la confianza que proviene de lucir un corte impecable.
+              </Typography>
+            </Box>
             <Button
               variant='contained'
               endIcon={<CalendarMonthIcon />}
@@ -85,13 +207,15 @@ const Home = () => {
               startIcon={<SchoolIcon />}
               className={'right-action-btn'}
               onClick={() => navigate('/courses')}>Ver cursos</Button>
-            <Typography variant='subtitle1' className={'right-text'}>
-              También ofrecemos cursos especializados para aquellos que desean adentrarse en el mundo de la barbería profesional.
-              Nuestros cursos están diseñados para enseñar las técnicas más avanzadas de corte de cabello, arreglo de barba, afeitado y mucho más.
-              Con la guía experta de nuestros maestros barberos, podrás desarrollar tus habilidades y perfeccionar tu oficio.
-              Ya sea que desees iniciar una nueva carrera o mejorar tus habilidades actuales, nuestros cursos te brindarán el conocimiento y la confianza para destacar en este apasionante campo.
-            </Typography>
-            <Divider orientation="vertical" flexItem className={'vertical-divider-red'} />
+            <Box className={'text-and-divider'}>
+              <Typography variant='subtitle1' className={'right-text'}>
+                También ofrecemos cursos especializados para aquellos que desean adentrarse en el mundo de la barbería profesional.
+                Nuestros cursos están diseñados para enseñar las técnicas más avanzadas de corte de cabello, arreglo de barba, afeitado y mucho más.
+                Con la guía experta de nuestros maestros barberos, podrás desarrollar tus habilidades y perfeccionar tu oficio.
+                Ya sea que desees iniciar una nueva carrera o mejorar tus habilidades actuales, nuestros cursos te brindarán el conocimiento y la confianza para destacar en este apasionante campo.
+              </Typography>
+              <Divider orientation="vertical" flexItem className={'vertical-divider-red'} />
+            </Box>
           </Box>
           <Box className={'btn-scroll-container'}>
             <Button variant='contained' onClick={() => scrollUp()} ><ArrowUpwardIcon /></Button>

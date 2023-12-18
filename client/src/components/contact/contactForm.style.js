@@ -18,10 +18,13 @@ export const styles = {
   },
   flipCard: {
     backgroundColor: 'transparent',
-    minWidth: '350px',
-    minHeight: '400px',
+    minWidth: '400px',
+    minHeight: '450px',
     perspective: '1000px',
-    fontFamily: 'sans-serif'
+    fontFamily: 'sans-serif',
+    '@media screen and (max-width: 768px)': {
+      minWidth: '330px',
+    },
   },
   flipCardFront: {
     boxShadow: '0 8px 14px 0 rgba(0,0,0,0.2)',
@@ -56,8 +59,9 @@ export const styles = {
     backgroundColor: 'white',
     padding: '20px',
     borderRadius: '10px',
+    boxSizing: 'border-box',
     '@media screen and (max-width: 768px)': {
-      width: '300px'
+      width: '330px'
     },
   },
   title: {

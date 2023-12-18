@@ -1,0 +1,61 @@
+.flip-card {
+  background-color: transparent;
+  width: 400px;
+  height: 85%;
+  perspective: 1000px;
+  font-family: sans-serif;
+}
+
+.form-contact {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 1rem;
+  border: 2px solid #1976d2;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.form-contact>.title {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  line-height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.flip-card-inner.rotate {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.2);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}

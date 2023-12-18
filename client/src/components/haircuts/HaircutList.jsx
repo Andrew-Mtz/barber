@@ -10,11 +10,11 @@ const boxStyle = {
   padding: 3
 }
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 const headers = new Headers();
 headers.append('ngrok-skip-browser-warning', 'true');
 
-const HaircutList = ({ onHaircutSelect, selectedId }) => {
+const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
   const [haircuts, setHaircuts] = React.useState(null)
 
   React.useEffect(() => {
@@ -23,7 +23,7 @@ const HaircutList = ({ onHaircutSelect, selectedId }) => {
 
   const getHaircuts = async () => {
     try {
-      const response = await fetch(`${baseUrl}/haircut`, {
+      const response = await fetch(`${baseUrl}/haircut-by-barber?barber_id=${selectedBarberId}`, {
         method: 'get',
         headers: headers,
       });
@@ -32,7 +32,6 @@ const HaircutList = ({ onHaircutSelect, selectedId }) => {
         return
       }
       const data = await response.json();
-      console.log(data)
       setHaircuts(data);
     } catch (error) {
       console.error('Error al obtener los cortes de pelo:', error);

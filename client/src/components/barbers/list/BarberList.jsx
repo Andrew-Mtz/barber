@@ -10,7 +10,7 @@ const boxStyle = {
   padding: 3
 }
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 const headers = new Headers();
 headers.append('ngrok-skip-browser-warning', 'true');
 
@@ -22,7 +22,6 @@ const BarberList = ({ onBarberSelect, selectedId }) => {
   }, [])
 
   const getBarbers = async () => {
-    console.log(baseUrl)
     try {
       const response = await fetch(`${baseUrl}/barber`, {
         method: 'get',
@@ -33,7 +32,6 @@ const BarberList = ({ onBarberSelect, selectedId }) => {
         return
       }
       const data = await response.json();
-      console.log(data)
       setBarbers(data);
     } catch (error) {
       console.error('Error al obtener los barberos:', error);

@@ -1,7 +1,7 @@
 import React from 'react'
 import BarbersCarousel from '../components/barbers/carousel/BarbersCarousel ';
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 const headers = new Headers();
 headers.append('ngrok-skip-browser-warning', 'true');
 
@@ -23,7 +23,6 @@ const OurTeam = () => {
         return
       }
       const data = await response.json();
-      console.log(data)
       setBarbers(data);
     } catch (error) {
       console.error('Error al obtener los barberos:', error);

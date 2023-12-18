@@ -1,36 +1,116 @@
+.container-card-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  width: 100%;
+  justify-content: center;
+}
+
 .barber-card {
   position: relative;
   overflow: hidden;
   transition: max-width 0.3s ease-in-out, max-height 0.3s ease-in-out, transform 0.3s ease-in-out;
-  max-width: 350px;
   background-color: #fff;
   border-radius: 10px;
-  transform: translate(-50%, -50%);
-  left: 50%;
-  top: 50%;
+  height: 450px;
+  max-width: 330px;
+  order: 2;
+}
+
+.barber-card.minimal {
+  height: auto;
+  max-height: 120px;
 }
 
 .barber-card.expanded {
-  max-width: 80%;
-  transform: translateX(-50%, -50%);
-  left: 50%;
-  top: 50%;
+  width: 100%;
   display: flex;
+  max-width: none;
+  order: 1;
+  height: 570px;
 }
 
 .barber-expanded {
   padding: 1.5em;
-  width: fit-content;
   text-align: start;
+  background-color: #eaeded;
+  flex: 1;
+  display: flex;
+  gap: 25px;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.img-section {
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  width: 330px;
+}
+
+.card-container-text {
+  background-color: #1a1a1a87;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-bottom: 10px;
+  max-height: 25%;
+  padding: 10px;
+}
+
+.card-container-text.minimal {
+  box-sizing: border-box;
+  height: 100%;
+  max-height: 100%;
+}
+
+.card-container-text>* {
+  color: white;
+}
+
+.card-container-btns {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.card-container-btns>button.inactive {
+  color: grey;
+}
+
+.barber-data-section {
+  margin-top: 20px;
   background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.barber-data-section > p {
+  font-size: 1rem;
+}
+
+.barber-reviews-section {
+  display: block;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px 10px 30px 10px;
+  box-sizing: border-box;
 }
 
 .barber-gallery {
   display: flex;
-  flex-wrap: wrap;
   gap: 2rem;
-  overflow: auto;
-  height: 250px;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: flex-start;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
 }
 
 .expand-button {
@@ -38,14 +118,23 @@
   background-color: #fff;
   opacity: 70%;
   border-radius: 50%;
-  right: 10px;
+  right: 25px;
   top: 10px;
   z-index: 2;
   transform: rotate(-90deg);
 }
 
+.expand-button.active {
+  background-color: #1976d2;
+  opacity: 100%;
+}
+
 @media (max-width: 768px) {
+
   /* Estilo específico para pantallas más pequeñas (teléfonos celulares) */
+  .container-card-list {
+    justify-content: center;
+  }
 
   .barber-card {
     display: flex;
@@ -53,7 +142,13 @@
   }
 
   .barber-card.expanded {
-    max-width: 350px;
+    max-width: 330px;
+    order: 2;
+  }
+
+  .barber-card.expanded>.img-section {
+    min-height: 55%;
+    max-height: 55%;
   }
 
   .barber-gallery {

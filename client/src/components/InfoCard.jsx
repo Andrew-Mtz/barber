@@ -1,9 +1,9 @@
 import { Card, CardContent, CardMedia, Typography } from '@mui/material'
 import React from 'react'
 
-const InfoCard = ({url, title, text}) => {
+const InfoCard = ({ url, title, text }) => {
   return (
-    <Card sx={{ maxWidth: 345, height: 360 }}>
+    <Card sx={{ maxWidth: 345, height: 360, opacity: 1 }}>
       <CardMedia
         component="img"
         height="140"

@@ -1,0 +1,7 @@
+.reviews-container {
+  background-color: white;
+}
+
+.reviews-container > * {
+  margin: 10px;
+}

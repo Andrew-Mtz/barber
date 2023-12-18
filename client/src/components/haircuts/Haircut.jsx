@@ -5,7 +5,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 const Haircut = ({ onSelect, name, price, description, id, selected }) => {
 
   return (
-    <Card sx={{ maxWidth: 260 }} onClick={() => onSelect(id)}>
+    <Card sx={{ maxWidth: 260 }} onClick={() => onSelect(id, name)}>
       <CardActionArea>
         <CardMedia
           component="img"

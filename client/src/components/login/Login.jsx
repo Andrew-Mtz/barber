@@ -2,7 +2,7 @@ import React from 'react'
 import { loginStyles } from "./login.style.js"
 import { Alert, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 
 const Login = ({ checkAuth }) => {
   const [account, setAccount] = React.useState({ email: "", password: "" });
@@ -44,11 +44,10 @@ const Login = ({ checkAuth }) => {
 
       const parseRes = await response.json()
 
-      console.log(parseRes)
-
       if (response.status === 409) return setFormError(parseRes)
 
       localStorage.setItem("token", parseRes.token)
+      localStorage.setItem("userType", parseRes.userType)
 
       checkAuth()
     } catch (error) {

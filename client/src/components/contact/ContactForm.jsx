@@ -1,10 +1,10 @@
 import React from 'react'
-import { styles } from "./contactForm.style.js"
+import './contactForm.css'
 import { Alert, Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import InstagramIcon from '@mui/icons-material/Instagram';
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 
 const ContactForm = () => {
   const [formData, setFormData] = React.useState({ name: "", email: "", message: "" });
@@ -69,78 +69,76 @@ const ContactForm = () => {
     }
   };
   return (
-    <Box sx={styles.flipCard}>
-      <Box sx={!reverse ? styles.flipCardInner : styles.flipCardInnerBack}>
-        <Box sx={styles.flipCardFront}>
-          <Box sx={styles.form}>
-            <form style={{ 'text-align': 'end' }} onSubmit={handleSubmit}>
-              {formError !== "" && <Alert variant="filled" severity="error">
-                {formError}
-              </Alert>}
-              <Typography variant='h3' color="primary" sx={styles.title}>Contactanos ✌️💈
-                <IconButton aria-label="delete" onClick={() => { setReverse(!reverse) }}>
-                  <ChangeCircleIcon />
-                </IconButton>
-              </Typography>
-              <TextField
-                onChange={(event) => handleData("name", event)}
-                onBlur={() => validateFields("name")}
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                name="name"
-                label="Name*"
-                type="text"
-                id="name"
-                helperText={errors.name}
-                error={!!errors.name}
-                autoComplete="name"
-                value={formData.name}
-              />
-              <TextField
-                onChange={(event) => handleData("email", event)}
-                onBlur={() => validateFields("email")}
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                id="email"
-                label="Email*"
-                name="email"
-                type='email'
-                helperText={errors.email}
-                error={!!errors.email}
-                autoComplete='email'
-                value={formData.email}
-              />
-              <TextField
-                onChange={(event) => handleData("message", event)}
-                onBlur={() => validateFields("message")}
-                id="outlined-multiline-flexible"
-                label="Mensaje*"
-                name="message"
-                type='text'
-                helperText={errors.message}
-                error={!!errors.message}
-                multiline
-                fullWidth
-                rows={4}
-                value={formData.message}
-              />
-              <Typography>{errors.form}</Typography>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={styles.submit}
-              >
-                Enviar
-              </Button>
-            </form>
-          </Box>
+    <Box className={'flip-card'}>
+      <Box className={`flip-card-inner ${reverse ? 'rotate' : ''}`}>
+        <Box className={'flip-card-front'}>
+          <form className={'form-contact'} style={{ 'text-align': 'end' }} onSubmit={handleSubmit}>
+            {formError !== "" && <Alert variant="filled" severity="error">
+              {formError}
+            </Alert>}
+            <Typography variant='h3' color="primary" className={'title'}>Contactanos ✌️💈
+              <IconButton aria-label="delete" onClick={() => { setReverse(!reverse) }}>
+                <ChangeCircleIcon />
+              </IconButton>
+            </Typography>
+            <TextField
+              onChange={(event) => handleData("name", event)}
+              onBlur={() => validateFields("name")}
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              name="name"
+              label="Name*"
+              type="text"
+              id="name"
+              helperText={errors.name}
+              error={!!errors.name}
+              autoComplete="name"
+              value={formData.name}
+            />
+            <TextField
+              onChange={(event) => handleData("email", event)}
+              onBlur={() => validateFields("email")}
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              id="email"
+              label="Email*"
+              name="email"
+              type='email'
+              helperText={errors.email}
+              error={!!errors.email}
+              autoComplete='email'
+              value={formData.email}
+            />
+            <TextField
+              onChange={(event) => handleData("message", event)}
+              onBlur={() => validateFields("message")}
+              id="outlined-multiline-flexible"
+              label="Mensaje*"
+              name="message"
+              type='text'
+              helperText={errors.message}
+              error={!!errors.message}
+              multiline
+              fullWidth
+              rows={4}
+              value={formData.message}
+            />
+            <Typography>{errors.form}</Typography>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={'submit'}
+            >
+              Enviar
+            </Button>
+          </form>
         </Box>
-        <Box sx={styles.flipCardBack}>
-          <Box sx={styles.form}>
-            <Typography variant='h3' color="primary" sx={styles.title}>Encontranos📌☎️
+        <Box className={'flip-card-back'}>
+          <Box className={'form-contact'}>
+            <Typography variant='h3' color="primary" className={'title'}>Encontranos📌☎️
               <IconButton aria-label="delete" onClick={() => { setReverse(!reverse) }}>
                 <ChangeCircleIcon />
               </IconButton>

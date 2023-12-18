@@ -1,0 +1,32 @@
+.card-review-container {
+  border: 1px solid #1976d2;
+  border-radius: 16px;
+  width: 330px;
+}
+
+.card-review-container-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1976d2;
+  border-top-right-radius: 14px;
+  border-top-left-radius: 14px;
+  padding: 10px 5px;
+}
+
+.card-review-container-user-info {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-review-container-description {
+  padding: 10px;
+}
+
+.card-review-container-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px;
+}

@@ -16,11 +16,13 @@ const Booking = ({ isLoggedIn }) => {
   const navigate = useNavigate()
   const location = useLocation();
 
-  const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+  const baseUrl = process.env.REACT_APP_BASEURL
 
   const isAccountRoute = location.state && location.state.previousPath === '/account';
 
   const [succes, setSucces] = React.useState(false);
+  const [titleErMsgBooking, setTitleErMsgBooking] = React.useState('');
+  const [erMsgBooking, setErMsgBooking] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [activeStep, setActiveStep] = React.useState(0);
   const [error, setError] = React.useState(false);
@@ -28,20 +30,28 @@ const Booking = ({ isLoggedIn }) => {
   const [bookingData, setBookingData] = React.useState({
     "status": "scheduled",
     "barber_id": 0,
+    "barber_name": "",
     "haircut_id": 0,
+    "haircut_name": "",
     "schedule_id": 0,
-    "date_id": 0
+    "date": "",
+    "date_id": 0,
+    "hour": ""
   })
 
   React.useEffect(() => {
     if (isAccountRoute) {
       const storedData = localStorage.getItem("Booking")
-      return storedData ? setBookingData(JSON.parse(storedData)) : setBookingData({
+      return storedData ? (setActiveStep(2), setBookingData(JSON.parse(storedData))) : setBookingData({
         "status": "scheduled",
         "barber_id": 0,
+        "barber_name": "",
         "haircut_id": 0,
+        "haircut_name": "",
         "schedule_id": 0,
-        "date_id": 0
+        "date": "",
+        "date_id": 0,
+        "hour": ""
       });
     }
     localStorage.removeItem("Booking")
@@ -55,25 +65,29 @@ const Booking = ({ isLoggedIn }) => {
     setOpen(false);
   };
 
-  const handleBarberSelect = (id) => {
+  const handleBarberSelect = (id, name, lastName) => {
     setBookingData((prevBookingData) => ({
       ...prevBookingData,
       barber_id: id,
+      barber_name: `${name} ${lastName}`
     }));
   };
 
-  const handleHaircutSelect = (id) => {
+  const handleHaircutSelect = (id, name) => {
     setBookingData((prevBookingData) => ({
       ...prevBookingData,
       haircut_id: id,
+      haircut_name: name
     }));
   };
 
-  const handleScheduleSelect = (scheduleId, dateId) => {
+  const handleScheduleSelect = (scheduleId, dateId, date, hour) => {
     setBookingData((prevBookingData) => ({
       ...prevBookingData,
       schedule_id: scheduleId,
-      date_id: dateId
+      date: date,
+      date_id: dateId,
+      hour: hour
     }));
   };
 
@@ -138,20 +152,33 @@ const Booking = ({ isLoggedIn }) => {
           'ngrok-skip-browser-warning': 'true'
         }
       });
-      if (response.status === 409) {
+      if (response.ok) {
+        setSucces(true);
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        return setSucces(false)
+      } else {
+        if (response.status === 409) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          setTitleErMsgBooking('Ya tienes una reserva hecha')
+          setErMsgBooking('Puedes cancelar tu reserva hasta 2 horas antes en "Mi reserva" y luego agendar una nueva')
+          return setSucces(false);
+        }
+        await response.json();
+        setTitleErMsgBooking('Error al completar la reserva')
+        setErMsgBooking('Ha ocurrido un error inesperado, espera unos minutos e intenta de nuevo. Si el error persiste hasnos saber!')
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        return setSucces(false);
       }
-      setSucces(true)
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
-      console.error('Error al completar la reserva:', error);
+      setTitleErMsgBooking('Error al completar la reserva')
+      setErMsgBooking('Ha ocurrido un error inesperado, espera unos minutos e intenta de nuevo. Si el error persiste hasnos saber!')
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      return setSucces(false);
     }
   }
 
   const stepComponents = [
     <BarberList selectedId={bookingData.barber_id} onBarberSelect={handleBarberSelect} />,
-    <HaircutList selectedId={bookingData.haircut_id} onHaircutSelect={handleHaircutSelect} />,
+    <HaircutList selectedId={bookingData.haircut_id} selectedBarberId={bookingData.barber_id} onHaircutSelect={handleHaircutSelect} />,
     <Calendar selectedBarberId={bookingData.barber_id} selectedId={bookingData.schedule_id} selectedDateId={bookingData.date_id} onScheduleSelect={handleScheduleSelect} />,
   ];
   return (
@@ -166,23 +193,35 @@ const Booking = ({ isLoggedIn }) => {
         })}
       </Stepper>
       {activeStep === steps.length ? (
-        <React.Fragment>
+        <>
           <Box sx={{
             height: '450px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
-            {succes ? <SuccesfullBooking title={"Agendado correctamente"} message={'Puedes ver los detalles de la reserva en "Mi reserva"'} />
-              : <ErrorBooking title={"Ya tienes una reserva hecha"} message={'Puedes cancelar tu reserva en "Mi reserva" y luego agendar una nueva'} />}
+            {succes ? <SuccesfullBooking title={"Agendado correctamente"} message={'Puedes ver los detalles de la reserva o cancelarla hasta 2 horas antes en "Mi reserva"'} />
+              : <ErrorBooking title={titleErMsgBooking} message={erMsgBooking} />}
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Box sx={{ flex: '1 1 auto' }} />
-            <Button variant='contained' onClick={handleReset}>Ver Reservas</Button>
+            {succes ? <Button
+              variant='contained'
+              onClick={handleReset}
+              sx={{ mr: 1, padding: 1.5 }}>
+              Ver Reservas
+            </Button>
+              : <Button
+                variant='contained'
+                onClick={handleBack}
+                sx={{ mr: 1, padding: 1.5 }}
+                startIcon={<ArrowBackIcon />}>
+                Volver
+              </Button>}
           </Box>
-        </React.Fragment>
+        </>
       ) : (
-        <React.Fragment>
+        <>
           <form onSubmit={handleSubmit}>
             <Box sx={{
               minHeight: '450px',
@@ -232,7 +271,7 @@ const Booking = ({ isLoggedIn }) => {
             title={"Cuenta necesaria para continuar"}
             message={"Para completar la reserva debes tener una cuenta. Presione en continuar para crear una cuenta o iniciar sesión si ya tiene una. Los datos seleccionados quedaran guardados "}
           />
-        </React.Fragment>
+        </>
       )}
     </Box>
   )

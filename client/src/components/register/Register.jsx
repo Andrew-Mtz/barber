@@ -1,20 +1,28 @@
 import React from 'react'
 import { registerStyles } from "./register.style.js"
-import { Alert, Button, Checkbox, FormControlLabel, FormGroup, TextField, Typography } from '@mui/material'
+import { Alert, Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material'
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 
 const Register = ({ checkAuth }) => {
-  const [account, setAccount] = React.useState({ name: "", last_name: "", phone: "", email: "", password: "" });
+  const [account, setAccount] = React.useState({ name: "", last_name: "", phone: "", email: "", password: "", acceptNotifications: false, remember: false });
   const [errors, setErrors] = React.useState({ name: "", last_name: "", email: "", password: "" });
   const [formError, setFormError] = React.useState("")
 
-  const handelAccount = (property, event) => {
+  const handleAccount = (property, event) => {
     const accountCopy = { ...account };
     accountCopy[property] = event.target.value;
     setAccount(accountCopy);
     setFormError("")
   }
+
+  const handleAcceptNotification = (event) => {
+    setAccount({ ...account, acceptNotifications: event.target.checked });
+  };
+
+  const handleRemember = (event) => {
+    setAccount({ ...account, remember: event.target.checked });
+  };
 
   const validateFields = (property) => {
     if (account[property] === "") {
@@ -26,12 +34,12 @@ const Register = ({ checkAuth }) => {
   };
 
   const isEmailValid = (email) => {
-    return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+    return /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(email)
   };
 
-  const registerUser = async (name, last_name, phone, email, password) => {
+  const registerUser = async (name, last_name, phone, email, password, acceptNotifications, rememberMe) => {
     try {
-      const body = { name, last_name, phone, email, password }
+      const body = { name, last_name, phone, email, password, acceptNotifications, rememberMe }
 
       const response = await fetch(`${baseUrl}/register`, {
         method: "POST",
@@ -63,7 +71,7 @@ const Register = ({ checkAuth }) => {
 
     if (!!errors.email || !!errors.password || !!errors.name || !!errors.last_name) return console.log("invalid")
 
-    registerUser(account.name, account.last_name, account.phone, account.email, account.password)
+    registerUser(account.name, account.last_name, account.phone, account.email, account.password, account.acceptNotifications, account.remember)
   };
   return (
     <form style={registerStyles.form} onSubmit={handleSubmit}>
@@ -71,7 +79,7 @@ const Register = ({ checkAuth }) => {
         {formError}
       </Alert>}
       <TextField
-        onChange={(event) => handelAccount("name", event)}
+        onChange={(event) => handleAccount("name", event)}
         onBlur={() => validateFields("name")}
         variant="outlined"
         margin="normal"
@@ -85,7 +93,7 @@ const Register = ({ checkAuth }) => {
         autoComplete='given-name'
       />
       <TextField
-        onChange={(event) => handelAccount("last_name", event)}
+        onChange={(event) => handleAccount("last_name", event)}
         onBlur={() => validateFields("last_name")}
         variant="outlined"
         margin="normal"
@@ -99,7 +107,7 @@ const Register = ({ checkAuth }) => {
         autoComplete='family-name'
       />
       <TextField
-        onChange={(event) => handelAccount("phone", event)}
+        onChange={(event) => handleAccount("phone", event)}
         onBlur={() => validateFields("phone")}
         variant="outlined"
         margin="normal"
@@ -107,11 +115,11 @@ const Register = ({ checkAuth }) => {
         id="phone"
         label="Phone"
         name="phone"
-        type='number'
+        type='tel'
         autoComplete='tel-national'
       />
       <TextField
-        onChange={(event) => handelAccount("email", event)}
+        onChange={(event) => handleAccount("email", event)}
         onBlur={() => validateFields("email")}
         variant="outlined"
         margin="normal"
@@ -125,7 +133,7 @@ const Register = ({ checkAuth }) => {
         autoComplete='email'
       />
       <TextField
-        onChange={(event) => handelAccount("password", event)}
+        onChange={(event) => handleAccount("password", event)}
         onBlur={() => validateFields("password")}
         variant="outlined"
         margin="normal"
@@ -140,12 +148,24 @@ const Register = ({ checkAuth }) => {
       />
       <FormGroup>
         <FormControlLabel
-          control={<Checkbox value="acceptEmails" color="primary" />}
+          control={
+            <Checkbox
+              checked={account.acceptNotifications}
+              onChange={handleAcceptNotification}
+              value="acceptNotification"
+              color="primary" />
+          }
           label="Acepto recibir correos con recordatorios y novedades"
           sx={registerStyles.rememberBtnContainer}
         />
         <FormControlLabel
-          control={<Checkbox value="remember" color="primary" />}
+          control={
+            <Checkbox
+              checked={account.remember}
+              onChange={handleRemember}
+              value="remember"
+              color="primary" />
+          }
           label="Recuerdame"
           sx={registerStyles.rememberBtnContainer}
         />

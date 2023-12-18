@@ -1,14 +1,23 @@
 import React from 'react'
 import dayjs from 'dayjs';
-import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material'
 import DialogConfirm from '../components/infoMessage/DialogConfirm';
 import LoginAlert from '../components/loginAlert/LoginAlert';
 import { useNavigate } from 'react-router-dom'
+import ModalReview from '../components/modalReview/ModalReview';
 
-const baseUrl = 'http://localhost:8080'; //http://localhost:8080
+const baseUrl = process.env.REACT_APP_BASEURL
 
 const MyBooking = ({ isLoggedIn }) => {
   const navigate = useNavigate()
+
+  const [formData, setFormData] = React.useState({ value: 0, message: "" });
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false);
+    setFormData({ value: 0, message: "" });
+  };
 
   const [infoMessage, setInfoMessage] = React.useState("")
   const [booking, setBooking] = React.useState([])
@@ -95,20 +104,16 @@ const MyBooking = ({ isLoggedIn }) => {
           'ngrok-skip-browser-warning': 'true'
         }
       });
-      console.log(response)
       getMyBooking()
     } catch (error) {
       console.log(error)
     }
   }
 
-  const reviewBooking = (id) => {
-    console.log(`La reserva ${id} sera reseñada`)
-  }
-
   const buttonStyles = {
     btnActive: {
-      backgroundColor: myReservation ? '#fff' : 'rgba(25, 118, 210, 0.04)',
+      backgroundColor: myReservation ? '#fff' : '#878787',
+      color: !myReservation && '#fff',
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0,
       width: '200px',
@@ -117,7 +122,8 @@ const MyBooking = ({ isLoggedIn }) => {
       }
     },
     btnInactive: {
-      backgroundColor: !myReservation ? '#fff' : 'rgba(25, 118, 210, 0.04)',
+      backgroundColor: !myReservation ? '#fff' : '#878787',
+      color: myReservation && '#fff',
       borderBottomLeftRadius: 0,
       borderBottomRightRadius: 0,
       width: '200px',
@@ -130,8 +136,8 @@ const MyBooking = ({ isLoggedIn }) => {
   return (
     <>
       {!isLoggedIn ? <LoginAlert /> :
-        <React.Fragment>
-          <Stack direction="row" spacing={2}>
+        <>
+          <Stack direction="row" spacing={2} sx={{alignSelf: 'flex-start'}}>
             <Box>
               <Button
                 sx={buttonStyles.btnActive}
@@ -158,6 +164,7 @@ const MyBooking = ({ isLoggedIn }) => {
                     <TableCell align="center">Tipo corte</TableCell>
                     <TableCell align="center">Precio</TableCell>
                     <TableCell align="center">Contacto</TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                   :
                   <TableRow>
@@ -184,10 +191,28 @@ const MyBooking = ({ isLoggedIn }) => {
                             variant='contained'
                             onClick={() => handleOpenDialog(book.id)}>Cancelar
                           </Button> :
-                          <Button
-                            variant='contained'
-                            onClick={() => reviewBooking(book.id)}>Dejar reseña
-                          </Button>
+                          book.pending ?
+                            <>
+                              <Button
+                                variant='contained'
+                                onClick={() => handleOpen(book.review_id)}>Dejar reseña
+                              </Button>
+                              <ModalReview review_id={book.review_id} open={open} formData={formData} setFormData={setFormData} handleClose={handleClose} />
+                            </>
+                            :
+                            <Button
+                              variant='contained'
+                              onClick={
+                                () => navigate(`/our-team`, {
+                                  state: { 
+                                    barberId: book.barber_id, 
+                                    reviewId: book.review_id,
+                                    previousPath: 'my-booking'
+                                  }
+                                })
+                              }>
+                              Ver reseña
+                            </Button>
                         }
                       </TableCell>
                       <DialogConfirm
@@ -213,7 +238,7 @@ const MyBooking = ({ isLoggedIn }) => {
               </TableBody>
             </Table>
           </TableContainer>
-        </React.Fragment>}
+        </>}
     </>
   )
 }

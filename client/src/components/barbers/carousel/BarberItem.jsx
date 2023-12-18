@@ -1,13 +1,18 @@
 import React from 'react'
-import { Box, Card, CardActionArea, CardContent, CardMedia, IconButton, Typography, Modal } from '@mui/material'
+import { Box, IconButton, Typography, Modal } from '@mui/material'
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import './barberItem.css';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import StarRateIcon from '@mui/icons-material/StarRate';
 import CloseIcon from '@mui/icons-material/Close';
+import CardReview from '../../cardReview/CardReview';
 
-const BarberItem = ({ barber, expanded, toggleExpanded }) => {
+
+const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) => {
   const [selectedMedia, setSelectedMedia] = React.useState(null);
-
   const openMediaModal = (mediaUrl) => {
     setSelectedMedia(mediaUrl);
   };
@@ -27,37 +32,89 @@ const BarberItem = ({ barber, expanded, toggleExpanded }) => {
     }
   };
 
+  const settings = {
+    className: "center",
+    centerMode: true,
+    centerPadding: "0px",
+    minHeight: '100%',
+    dots: true,
+    speed: 500,
+    slidesToShow: reviews?.length >= 2 ? 2 : reviews?.length,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    pauseOnHover: true,
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: {
+          className: "center",
+          centerMode: true,
+          centerPadding: "0px",
+          slidesToShow: reviews?.length >= 2 ? 2 : reviews?.length,
+          dots: true,
+          speed: 500,
+          autoplay: true,
+          autoplaySpeed: 3000,
+          pauseOnHover: true,
+          arrows: false
+        }
+      },
+      {
+        breakpoint: 925,
+        settings: {
+          className: "center",
+          centerMode: true,
+          centerPadding: '0px',
+          slidesToShow: 1,
+          dots: true,
+          speed: 500,
+          autoplay: true,
+          autoplaySpeed: 3000,
+          pauseOnHover: true,
+          arrows: false
+        }
+      }
+    ]
+  };
+
   return (
     <Box
-      className={`barber-card ${expanded ? 'expanded' : ''}`}
+      className={`barber-card ${oneSelected ? expanded ? 'expanded' : 'minimal' : ''}`}
     >
-      <Card>
-        <CardActionArea onClick={toggleExpanded}>
-          <CardMedia
-            component="img"
-            height="450"
-            image={barber.barber_image_url}
-            alt={`Foto de ${barber.name} ${barber.last_name}`}
-          />
-          {!expanded && <CardContent>
-            <Box display={'flex'} justifyContent={'space-between'}>
-              <Typography gutterBottom variant="h5" component="div">
-                {barber.name} {barber.last_name}
-              </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              {barber.description}
+      <Box className={'img-section'} sx={{ backgroundImage: `url(${barber.barber_image_url})` }}>
+        {!expanded && <Box className={`card-container-text ${oneSelected ? 'minimal' : ''}`}>
+          <Box display={'flex'} justifyContent={'space-between'}>
+            <Typography gutterBottom variant="h5">
+              {barber.name} {barber.last_name}
             </Typography>
-          </CardContent>}
-        </CardActionArea>
-      </Card>
-
+          </Box>
+          <Typography variant="body1">
+            {barber.description}
+          </Typography>
+        </Box>}
+      </Box>
       {expanded && (
         <Box className="barber-expanded">
-          <Typography gutterBottom variant='h5' color="text.secondary">{barber.name} {barber.last_name}</Typography>
-          <Typography gutterBottom variant="body2" color="text.secondary">{barber.full_description}</Typography>
-          {barber?.haircut_image_urls[0] != null && <Typography gutterBottom variant='h5' color="text.secondary">Algunos trabajos:</Typography>}
+          <Box className="barber-data-section">
+            <Box sx={{display: 'flex', alignItems: 'baseline'}}>
+              <Typography variant='h4' mr={4} color="text.secondary">{barber.name} {barber.last_name}</Typography>
+              <Typography variant="h5" color="text.secondary"><StarRateIcon sx={{ color: '#faaf00' }} /> {parseFloat(barber.average_rating).toFixed(1)}</Typography>
+            </Box>
+            <Typography gutterBottom variant="body2" color="text.secondary">{barber.full_description}</Typography>
+          </Box>
+          <Box className="barber-reviews-section" sx={{ width: '100%' }}>
+            <Typography gutterBottom variant="h5" color="text.secondary">Opiniones de la gente:</Typography>
+            <Slider {...settings}>
+              {reviews?.length > 0 && reviews?.map((review) => {
+                return (
+                  <CardReview key={review.id} review={review} />
+                )
+              })}
+            </Slider>
+          </Box>
           <Box className="barber-gallery">
+            <Typography gutterBottom variant="h5" color="text.secondary">Algunos cortes realizados:</Typography>
             {barber?.haircut_image_urls?.map((mediaUrl, index) => {
               const mediaType = getMediaType(mediaUrl);
 
@@ -65,19 +122,19 @@ const BarberItem = ({ barber, expanded, toggleExpanded }) => {
                 <div
                   key={index}
                   className="media-item"
-                  onClick={() => openMediaModal(mediaUrl)}
                 >
                   {mediaType === 'image' ? (
                     <img
                       src={mediaUrl}
+                      style={{ width: '100%' }}
                       alt={`Imagen ${index + 1}`}
+                      onClick={() => openMediaModal(mediaUrl)}
                     />
                   ) : mediaType === 'video' ? (
                     <video
                       controls
                       src={mediaUrl}
-                      poster
-                      style={{ width: '100%', height: '100%' }}
+                      style={{ width: '100%' }}
                       alt={`Video ${index + 1}`}
                     />
                   ) : null}
@@ -87,7 +144,6 @@ const BarberItem = ({ barber, expanded, toggleExpanded }) => {
           </Box>
         </Box>
       )}
-
       <Modal
         open={selectedMedia !== null}
         onClose={closeMediaModal}
@@ -114,14 +170,13 @@ const BarberItem = ({ barber, expanded, toggleExpanded }) => {
           <img
             src={selectedMedia}
             alt="Imagen seleccionada"
-            style={{ maxWidth: '100%', maxHeight: '100%' }}
+            style={{ minWidth: '400px', minHeight: '500px', maxWidth: '100%', maxHeight: '100%' }}
           />
         </Box>
       </Modal>
-
-      <Box className="expand-button">
+      <Box className={`expand-button ${expanded && 'active'}`}>
         <IconButton onClick={toggleExpanded}>
-          {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          {expanded ? <ExpandLessIcon sx={{ color: 'white' }} /> : <ExpandMoreIcon />}
         </IconButton>
       </Box>
     </Box>
