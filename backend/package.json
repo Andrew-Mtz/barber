@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "sv": "nodemon src/server/server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "sv": "nodemon server/server.js"
   },
   "keywords": [],
   "author": "",
