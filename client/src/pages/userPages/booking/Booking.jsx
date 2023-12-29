@@ -5,12 +5,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { useLocation, useNavigate } from 'react-router-dom'
-import BarberList from '../../components/barbers/list/BarberList.jsx';
-import HaircutList from '../../components/haircuts/HaircutList.jsx';
-import Calendar from '../../components/Calendar.jsx';
-import DialogConfirm from '../../components/infoMessage/DialogConfirm.jsx';
-import SuccesfullBooking from '../../components/infoMessage/SuccesfullBooking.jsx';
-import ErrorBooking from '../../components/infoMessage/ErrorBooking.jsx';
+import BarberList from '../../../components/barbers/list/BarberList.jsx';
+import HaircutList from '../../../components/haircuts/HaircutList.jsx';
+import Calendar from '../../../components/Calendar.jsx';
+import DialogConfirm from '../../../components/infoMessage/DialogConfirm.jsx';
+import SuccesfullBooking from '../../../components/infoMessage/SuccesfullBooking.jsx';
+import ErrorBooking from '../../../components/infoMessage/ErrorBooking.jsx';
 
 const Booking = ({ isLoggedIn }) => {
   const navigate = useNavigate()

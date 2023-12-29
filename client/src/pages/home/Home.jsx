@@ -1,11 +1,11 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Button, Divider, Typography } from '@mui/material'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import SchoolIcon from '@mui/icons-material/School';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { useNavigate } from 'react-router-dom'
-import InfoCard from '../components/InfoCard';
+import InfoCard from '../../components/InfoCard';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './home.css'

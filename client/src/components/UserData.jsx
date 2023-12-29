@@ -35,7 +35,7 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
     setEditMode(false)
   }
 
-  const handelAccount = (property, event) => {
+  const handleAccount = (property, event) => {
     const accountCopy = { ...account };
     accountCopy[property] = event.target.value;
     setAccount(accountCopy);
@@ -172,13 +172,13 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
                 {formError}
               </Alert>}
               <TextField
-                onChange={(event) => handelAccount("name", event)}
+                onChange={(event) => handleAccount("name", event)}
                 onBlur={() => validateFields("name")}
                 variant="outlined"
                 margin="normal"
                 fullWidth
                 id="name"
-                label="Name*"
+                label="Nombre*"
                 name="name"
                 type='text'
                 helperText={errors.name}
@@ -187,13 +187,13 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
                 defaultValue={user.name}
               />
               <TextField
-                onChange={(event) => handelAccount("last_name", event)}
+                onChange={(event) => handleAccount("last_name", event)}
                 onBlur={() => validateFields("last_name")}
                 variant="outlined"
                 margin="normal"
                 fullWidth
                 id="last_name"
-                label="Last name*"
+                label="Apellido*"
                 name="last_name"
                 type='text'
                 helperText={errors.last_name}
@@ -202,26 +202,26 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
                 defaultValue={user.last_name}
               />
               <TextField
-                onChange={(event) => handelAccount("phone", event)}
+                onChange={(event) => handleAccount("phone", event)}
                 onBlur={() => validateFields("phone")}
                 variant="outlined"
                 margin="normal"
                 fullWidth
                 id="phone"
-                label="Phone"
+                label="Celular"
                 name="phone"
                 type='tel'
                 autoComplete='tel-national'
                 defaultValue={user.phone}
               />
               <TextField
-                onChange={(event) => handelAccount("email", event)}
+                onChange={(event) => handleAccount("email", event)}
                 onBlur={() => validateFields("email")}
                 variant="outlined"
                 margin="normal"
                 fullWidth
                 id="email"
-                label="Email*"
+                label="Correo*"
                 name="email"
                 type='email'
                 helperText={errors.email}

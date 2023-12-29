@@ -13,3 +13,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#modal-modal-rating{
+  color: var(--primary-color);
+}
+
+:root {
+  /* ===== Colors ===== */
+  --primary-color: #1976d2;
+  --secondary-color: #111827;
+  --primary-text-color: #FFF;
+  --secondary-text-color: #000;
+  --panel-color: #FFF;
+  --black-light-color: #707070;
+  --border-color: #e6e5e5;
+
+  /* ====== Transition ====== */
+  --tran-05: all 0.5s ease;
+  --tran-03: all 0.3s ease;
+  --tran-03: all 0.2s ease;
+}

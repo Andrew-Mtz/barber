@@ -1,4 +1,3 @@
-import pool from "../db.js";
 import { sendContactEmail } from "../utils/nodemailer.js";
 
 const getContactEmail = async (req, res) => {

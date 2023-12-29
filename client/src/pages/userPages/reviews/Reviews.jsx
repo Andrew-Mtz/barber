@@ -1,5 +1,5 @@
 import React from 'react'
-import CardReview from '../../components/cardReview/CardReview';
+import CardReview from '../../../components/cardReview/CardReview';
 import { Box } from '@mui/material';
 import './reviews.css'
 

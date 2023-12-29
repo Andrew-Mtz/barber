@@ -5,12 +5,12 @@ export const stepperStyle = {
   paddingBottom: 3,
   "& .Mui-active": {
     "& .MuiStepConnector-line": {
-      borderColor: '#1976d2'
+      borderColor: 'var(--primary-color)'
     }
   },
   "& .Mui-completed": {
     "& .MuiStepConnector-line": {
-      borderColor: '#1976d2'
+      borderColor: 'var(--primary-color)'
     }
   },
   "& .MuiStepLabel-labelContainer": {

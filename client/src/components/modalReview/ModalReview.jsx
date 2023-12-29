@@ -3,12 +3,23 @@ import React from 'react'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const ModalReview = ({ review_id, open, formData, setFormData, handleClose }) => {
+const ModalReview = ({ review_id, open, handleClose }) => {
+  const [formData, setFormData] = React.useState({ value: null, message: "" });
+  const [formError, setFormError] = React.useState({ value: "", message: "" });
 
   const handleData = (property, value) => {
     const formDataCopy = { ...formData };
     formDataCopy[property] = value;
     setFormData(formDataCopy);
+    setFormError("")
+  }
+
+  const sendData = (reviewId) => {
+    if (formData.value !== null && formData.message !== "") {
+      return reviewBooking(reviewId)
+    }
+    formData.value === null && setFormError((prevErrors) => ({ ...prevErrors, value: "Debes puntar almenos con una estrella" }));
+    formData.message === "" && setFormError((prevErrors) => ({ ...prevErrors, message: "Debes agregar un mensaje" }));
   }
 
   const reviewBooking = async (reviewId) => {
@@ -56,14 +67,20 @@ const ModalReview = ({ review_id, open, formData, setFormData, handleClose }) =>
     >
       <Box sx={style}>
         <Typography id="modal-modal-title" sx={{ mb: 3, color: 'black' }} variant="h6" component="h2">Evalua el corte y deja un comentario!</Typography>
-        <Rating
-          id='modal-modal-rating'
-          name="simple-controlled"
-          value={formData.value}
-          onChange={(event, newValue) => {
-            handleData("value", newValue);
-          }}
-        />
+        <Box>
+          <Rating
+            id='modal-modal-rating'
+            name="simple-controlled"
+            className='rating'
+            value={formData.value}
+            onChange={(event, newValue) => {
+              handleData("value", newValue);
+            }}
+          />
+          {formError.value && (
+            <Typography variant='caption' sx={{ ml: 2, color: 'red' }}>{formError.value}</Typography>
+          )}
+        </Box>
         <TextField
           sx={{ mt: 2, mb: 3 }}
           onChange={(event) => handleData("message", event.target.value)}
@@ -76,6 +93,8 @@ const ModalReview = ({ review_id, open, formData, setFormData, handleClose }) =>
           fullWidth
           rows={4}
           value={formData.message}
+          helperText={formError.message}
+          error={!!formError.message}
         />
         <Button
           sx={{ mr: 3 }}
@@ -85,7 +104,7 @@ const ModalReview = ({ review_id, open, formData, setFormData, handleClose }) =>
         </Button>
         <Button
           variant='contained'
-          onClick={() => reviewBooking(review_id)}>Agregar reseña
+          onClick={() => sendData(review_id)}>Agregar reseña
         </Button>
       </Box>
     </Modal>

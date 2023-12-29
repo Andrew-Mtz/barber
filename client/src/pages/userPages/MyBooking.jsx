@@ -1,23 +1,19 @@
 import React from 'react'
 import dayjs from 'dayjs';
 import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material'
-import DialogConfirm from '../components/infoMessage/DialogConfirm';
-import LoginAlert from '../components/loginAlert/LoginAlert';
+import DialogConfirm from '../../components/infoMessage/DialogConfirm';
+import LoginAlert from '../../components/loginAlert/LoginAlert';
 import { useNavigate } from 'react-router-dom'
-import ModalReview from '../components/modalReview/ModalReview';
+import ModalReview from '../../components/modalReview/ModalReview';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const MyBooking = ({ isLoggedIn }) => {
   const navigate = useNavigate()
 
-  const [formData, setFormData] = React.useState({ value: 0, message: "" });
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
-    setFormData({ value: 0, message: "" });
-  };
+  const handleClose = () => setOpen(false);
 
   const [infoMessage, setInfoMessage] = React.useState("")
   const [booking, setBooking] = React.useState([])
@@ -200,7 +196,7 @@ const MyBooking = ({ isLoggedIn }) => {
                                 variant='contained'
                                 onClick={() => handleOpen(book.review_id)}>Dejar reseña
                               </Button>
-                              <ModalReview review_id={book.review_id} open={open} formData={formData} setFormData={setFormData} handleClose={handleClose} />
+                              <ModalReview review_id={book.review_id} open={open} handleClose={handleClose} />
                             </>
                             :
                             <Button

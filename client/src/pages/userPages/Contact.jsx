@@ -1,6 +1,6 @@
 import { Paper } from '@mui/material'
 import React from 'react'
-import ContactForm from '../components/contact/ContactForm'
+import ContactForm from '../../components/contact/ContactForm'
 
 
 const Contact = ({ isLoggedIn }) => {

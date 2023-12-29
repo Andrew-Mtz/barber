@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Alert, Box } from '@mui/material'
 import React from 'react'
 import Haircut from './Haircut'
 
@@ -13,7 +13,7 @@ const boxStyle = {
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
-  const [haircuts, setHaircuts] = React.useState(null)
+  const [haircuts, setHaircuts] = React.useState([])
 
   React.useEffect(() => {
     getHaircuts()
@@ -29,8 +29,7 @@ const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
         }
       });
       if (response.status === 404) {
-        setHaircuts(response.statusText)
-        return
+        return console.log(response.statusText) //a corregir
       }
       const data = await response.json();
       setHaircuts(data);
@@ -44,6 +43,7 @@ const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
       {haircuts?.map((haircut) => (
         <Haircut key={haircut.id}
           onSelect={onHaircutSelect}
+          url={haircut.image.url}
           name={haircut.name}
           price={haircut.price}
           description={haircut.description}

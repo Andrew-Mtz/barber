@@ -3,19 +3,17 @@ CREATE TABLE barbers (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
-  age INTEGER,
-  birthdate DATE,
-  description TEXT,
-  full_description TEXT,
-  phone VARCHAR(20),
-  barber_image_url VARCHAR(255)
+  description TEXT NOT NULL,
+  full_description TEXT NOT NULL,
+  phone VARCHAR(20) NOT NULL UNIQUE,
+  image JSONB NOT NULL
 );
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
-  phone VARCHAR(20),
+  phone VARCHAR(20) UNIQUE,
   password VARCHAR(255) NOT NULL,
   user_type VARCHAR(20) NOT NULL,
   profile_image_url VARCHAR(255),
@@ -26,8 +24,8 @@ CREATE TABLE haircuts (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   price DECIMAL(10, 2) NOT NULL,
-  description TEXT,
-  haircut_image_url VARCHAR(255)
+  description TEXT NOT NULL,
+  image JSONB NOT NULL
 );
 CREATE TABLE barber_haircuts (
   barber_id INTEGER NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
@@ -73,7 +71,7 @@ CREATE TABLE reviews (
 CREATE TABLE barber_haircuts_made (
   id SERIAL PRIMARY KEY,
   barber_id INTEGER REFERENCES barbers(id) ON DELETE CASCADE,
-  haircut_image_url VARCHAR(255) NOT NULL
+  image JSONB NOT NULL
 );
 INSERT INTO barbers (
     name,
@@ -82,7 +80,7 @@ INSERT INTO barbers (
     birthdate,
     description,
     phone,
-    barber_image_url
+    barber_image_data
   )
 VALUES (
     'Maximiliano',
@@ -99,8 +97,9 @@ INSERT INTO barbers (
     age,
     birthdate,
     description,
+    full_description,
     phone,
-    barber_image_url
+    barber_image_data
   )
 VALUES (
     'Aldo',
@@ -108,6 +107,7 @@ VALUES (
     23,
     '2000-02-16',
     'Me encanta jugar al futbol y rascarme las bolas',
+    'Hola soy Aldo, trabajo como barbero hace 2 años. Empece en mi casa aprendiendo viendo tutoriales y a pura prueba y error. Sigo aprendiendo para estar a la altura de cualquier corte que me pidan los clientes.'
     '092876540',
     'http://localhost:3001/uploads/barbers/aldo.jpg'
   );
@@ -118,7 +118,7 @@ INSERT INTO barbers (
     birthdate,
     description,
     phone,
-    barber_image_url
+    barber_image_data
   )
 VALUES (
     'Genaro',
@@ -158,6 +158,7 @@ VALUES ('11:00', 1),
   ('20:00', 1),
   ('21:00', 1),
   ('22:00', 1);
+
 -- Asocia al barbero con ID 1 con los cortes de pelo 1 y 2
 INSERT INTO barber_haircuts (barber_id, haircut_id)
 VALUES (1, 1);
@@ -190,6 +191,12 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+	-- Trigger to execute the create_initial_review function after a booking is created
+CREATE TRIGGER create_review_trigger
+AFTER INSERT ON booking
+FOR EACH ROW
+EXECUTE FUNCTION create_initial_review();
 
 
 -- Function to delete the associated review when a booking is canceled

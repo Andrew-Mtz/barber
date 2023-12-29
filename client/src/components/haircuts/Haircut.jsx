@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-const Haircut = ({ onSelect, name, price, description, id, selected }) => {
+const Haircut = ({ onSelect, url, name, price, description, id, selected }) => {
 
   return (
     <Card sx={{ maxWidth: 260 }} onClick={() => onSelect(id, name)}>
@@ -10,7 +10,7 @@ const Haircut = ({ onSelect, name, price, description, id, selected }) => {
         <CardMedia
           component="img"
           height="250"
-          image="https://www.latest-hairstyles.com/wp-content/uploads/edgar-haircuts-1x1-1.jpg"
+          image={url}
           alt="Corte de pelo"
         />
         <CardContent>
@@ -18,7 +18,7 @@ const Haircut = ({ onSelect, name, price, description, id, selected }) => {
             <Typography gutterBottom variant="h5" component="div">
               {name}
             </Typography>
-            {selected && <CheckCircleOutlineIcon sx={{ color: '#1976d2' }} />}
+            {selected && <CheckCircleOutlineIcon sx={{ color: 'var(--primary-color)' }} />}
           </Box>
           <Typography gutterBottom variant="body2" component="div">
             ${price}

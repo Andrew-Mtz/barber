@@ -7,7 +7,7 @@ const jwtGenerator = (id) => {
     user: id
   }
 
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1hr" })
+  return jwt.sign(payload, process.env.JWT_SECRET || 'cat123', { expiresIn: "1hr" })
 }
 
 export default jwtGenerator

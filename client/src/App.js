@@ -1,15 +1,21 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Container } from '@mui/material'
+
+//All
 import Navbar from './components/navbar/Navbar'
-import Home from './pages/Home'
-import Booking from './pages/booking/Booking'
-import MyBooking from './pages/MyBooking'
-import OurTeam from './pages/OurTeam'
-import Contact from './pages/Contact'
+import Home from './pages/home/Home'
 import Account from './pages/account/Account'
-import ManageHaircuts from './pages/ManageHaircuts'
-import Reviews from './pages/reviews/Reviews'
+
+//User
+import Booking from './pages/userPages/booking/Booking'
+import MyBooking from './pages/userPages/MyBooking'
+import OurTeam from './pages/userPages/OurTeam'
+import Contact from './pages/userPages/Contact'
+import Reviews from './pages/userPages/reviews/Reviews'
+
+//Admin
+import ManagePage from './pages/adminPages/ManagePage'
+import { ValidationContext } from './context/ValidationContext.jsx'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
@@ -17,8 +23,8 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [isBarber, setIsBarber] = React.useState(false);
-/*   const startHour = '11:00';
-  const endHour = '11:00'; */
+  //const startHour = '11:00';
+  //const endHour = '11:00';
 
   const checkToken = async () => {
     try {
@@ -86,20 +92,10 @@ const App = () => {
       }
     } */
 
-  const containerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginTop: '15vh',
-    width: '100%',
-    overflow: 'hidden'
-  }
-
   return (
     <BrowserRouter>
       <Navbar isAdmin={isAdmin} isBarber={isBarber} />
-      <Container sx={containerStyle}>
+      <ValidationContext>
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/booking' element={<Booking isLoggedIn={isLoggedIn} />} />
@@ -109,9 +105,9 @@ const App = () => {
           <Route path='/reviews' element={<Reviews />} />
           <Route path='/contact' element={<Contact isLoggedIn={isLoggedIn} />} />
           <Route path='/account' element={<Account isLoggedIn={isLoggedIn} checkAuth={checkAuth} />} />
-          <Route path='/manage-haircuts' element={<ManageHaircuts isLoggedIn={isLoggedIn} isBarber={isBarber} checkAuth={checkAuth} />} />
+          <Route path='/manage-page' element={<ManagePage isLoggedIn={isLoggedIn} isBarber={isBarber} checkAuth={checkAuth} />} />
         </Routes>
-      </Container>
+      </ValidationContext>
     </BrowserRouter>
   )
 }

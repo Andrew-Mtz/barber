@@ -39,7 +39,7 @@ const CardReview = ({ review }) => {
       <Avatar {...stringAvatar(`${review?.user_name} ${review?.user_last_name}`)} sx={{ width: 40, height: 40 }} />
         <Box className={'card-review-container-user-info'}>
           <Typography sx={{ ml: 2 }} variant='h6' color="white">{review?.user_name} {review?.user_last_name}</Typography>
-          <Rating id='modal-modal-rating' name="read-only" value={review?.rating} readOnly />
+          <Rating id='modal-modal-rating' className='rating' name="read-only" value={review?.rating} readOnly />
         </Box>
       </Box>
       <Box className={'card-review-container-description'}>

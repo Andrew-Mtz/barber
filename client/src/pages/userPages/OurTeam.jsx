@@ -1,5 +1,5 @@
 import React from 'react'
-import BarbersCarousel from '../components/barbers/carousel/BarbersCarousel ';
+import BarbersCarousel from '../../components/barbers/carousel/BarbersCarousel ';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 

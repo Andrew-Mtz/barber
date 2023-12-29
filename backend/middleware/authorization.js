@@ -10,7 +10,7 @@ export default async (req, res, next) => {
       return res.status(403).json("Not Authorized");
     }
     const jwtToken = authHeader.substring(7);
-    const payload = jwt.verify(jwtToken, process.env.JWT_SECRET);
+    const payload = jwt.verify(jwtToken, process.env.JWT_SECRET || 'cat123');
 
     req.user = payload.user;
     next();

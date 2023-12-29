@@ -1,0 +1,165 @@
+.container-control-panel {
+    display: flex;
+    width: 100%;
+    background-color: var(--panel-color);
+    border-radius: 16px;
+}
+
+nav {
+    height: 70vh;
+    width: 250px;
+    padding: 10px 14px;
+    background-color: var(--panel-color);
+    border-right: 1px solid var(--border-color);
+    transition: var(--tran-05);
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+}
+
+nav .logo-name {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+nav .logo-name .logo_name {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--secondary-text-color);
+    margin-left: 14px;
+    transition: var(--tran-05);
+}
+
+nav .menu-items {
+    margin-top: 40px;
+    height: calc(100% - 90px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-items li {
+    list-style: none;
+    margin-bottom: 10px;
+}
+
+.menu-items li a {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    text-decoration: none;
+    position: relative;
+}
+
+.nav-links {
+    padding-left: 20px;
+}
+
+.nav-links li a:hover:before {
+    content: "";
+    position: absolute;
+    left: -15px;
+    height: 5px;
+    width: 5px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+}
+
+body.dark li a:hover:before {
+    background-color: var(--secondary-text-color);
+}
+
+.menu-items li a .icon {
+    font-size: 21px;
+    min-width: 25px;
+    margin-right: 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--black-light-color);
+}
+
+.menu-items li a .link-name {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--black-light-color);
+    transition: var(--tran-05);
+}
+
+nav.close li a .link-name {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nav-links li a:hover .icon,
+.nav-links li a:hover .link-name,
+.nav-links li a .icon.active,
+.nav-links li a .link-name.active {
+    color: var(--primary-color);
+}
+
+body.dark .nav-links li a:hover .icon,
+body.dark .nav-links li a:hover .link-name {
+    color: var(--secondary-text-color);
+}
+
+.menu-items .logout-mode {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.menu-items .logout-mode a .exit-icon {
+    color: red;
+}
+
+.cp-section {
+    height: 70vh;
+    flex: 1 1;
+    padding: 10px 14px;
+    transition: var(--tran-05);
+    overflow: auto;
+}
+
+.cp-section-top {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+}
+
+.cp-section-top > .title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    margin-left: 10px;
+}
+
+/*Forms*/
+.cp-section>div>form {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .cp-form-image-container {
+    width: 30%;
+  }
+  
+  .cp-form-inputs-container {
+    width: 65%;
+  }
+
+  .cp-form-btns-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .file-input {
+    padding: 16px;
+    outline: none;
+    border-radius: 10px;
+    background: gray;
+  }

@@ -17,7 +17,7 @@ const Barber = ({ onSelect, url, name, lastName, description, id, selected }) =>
             <Typography gutterBottom variant="h5" component="div">
               {name} {lastName}
             </Typography>
-            {selected && <CheckCircleOutlineIcon sx={{ color: '#1976d2' }} />}
+            {selected && <CheckCircleOutlineIcon sx={{ color: 'var(--primary-color)' }} />}
           </Box>
           <Typography variant="body2" color="text.secondary">
             {description}

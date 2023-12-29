@@ -1,4 +1,6 @@
 import pool from "../db.js";
+import { deleteBarberImage, uploadBarberImage } from "../libs/cloudinary.js";
+import fs from "fs-extra"
 
 const getAllBarbers = async (req, res) => {
   try {
@@ -7,13 +9,11 @@ const getAllBarbers = async (req, res) => {
     b.id,
     b.name,
     b.last_name,
-    b.age,
-    b.birthdate,
     b.description,
     b.phone,
-    b.barber_image_url,
+    b.image,
     b.full_description,
-    ARRAY_AGG(DISTINCT  bhm.haircut_image_url) AS haircut_image_urls,
+    ARRAY_AGG(DISTINCT  bhm.image) AS hc_by_barber,
     AVG(r.rating) AS average_rating
   FROM barbers AS b
   LEFT JOIN barber_haircuts_made AS bhm ON b.id = bhm.barber_id
@@ -22,11 +22,9 @@ const getAllBarbers = async (req, res) => {
     b.id,
     b.name,
     b.last_name,
-    b.age,
-    b.birthdate,
     b.description,
     b.phone,
-    b.barber_image_url,
+    b.image,
     b.full_description;
     `;
     const result = await pool.query(query);
@@ -50,16 +48,27 @@ const getBarber = async (req, res) => {
 }
 
 const createBarber = async (req, res) => {
-  const { name, last_name, age, birthdate, description, phone } = req.body;
-
   try {
-    const query = `
-      INSERT INTO barbers (name, last_name, age, birthdate, description, phone)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id
-    `;
-    const values = [name, last_name, age, birthdate, description, phone];
+    const { name, last_name, description, full_description, phone } = req.body;
+    let image
 
+    if (req.files && req.files.image) {
+      const result = await uploadBarberImage(req.files.image.tempFilePath);
+      await fs.remove(req.files.image.tempFilePath)
+      image = {
+        url: result.secure_url,
+        public_id: result.public_id
+      }
+    } else {
+      res.status(404).json({ message: 'Ha ocurrido un problema al guardar la foto' });
+    }
+
+    const query = `
+          INSERT INTO barbers (name, last_name, description, full_description, phone, image)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING id
+        `;
+    const values = [name, last_name, description, full_description, phone, image];
     const result = await pool.query(query, values);
     const barberId = result.rows[0].id;
 
@@ -77,24 +86,56 @@ const createBarber = async (req, res) => {
 const deleteBarber = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const deleteQuery = 'DELETE FROM barbers WHERE id = $1';
+    const deleteQuery = 'DELETE FROM barbers WHERE id = $1 RETURNING *';
     const barberResult = await pool.query(deleteQuery, [id]);
 
     if (barberResult.rowCount === 0) {
       return res.status(404).json({ message: "Barbero no encontrado" });
     }
 
-    return res.status(204).send("Barbero eliminado correctamente");
+    if (barberResult.rows[0].image.public_id) {
+      await deleteBarberImage(barberResult.rows[0].image.public_id)
+    }
+    return res.status(204).end();
   } catch (error) {
     return res.status(500).json({ error: "Hubo un error al eliminar el barbero" });
   }
 }
 
 const updateBarber = async (req, res) => {
-  res.send('Editing a booking');
+  try {
+    const { id } = req.params;
+    const { name, last_name, description, full_description, phone } = req.body;
+    const result = await pool.query(
+      'UPDATE barbers SET name = $1, last_name = $2, description = $3, full_description = $4, phone = $5 WHERE id = $6 RETURNING *',
+      [name, last_name, description, full_description, phone, id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ message: "Barbero no encontrado" });
+
+    res.status(200).json({ message: 'Barbero editado correctamente.', id });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error en el servidor");
+  }
+}
+
+const addHaircutsToBarber = async () => {
+  try {
+    const { barberId, haircutIds } = req.body;
+
+    for (const haircutId of haircutIds) {
+      const insertQuery = `INSERT INTO barber_haircuts (barber_id, haircut_id) VALUES ($1, $2)`;
+      const values = [barberId, haircutId];
+      const result = await pool.query(insertQuery, values);
+    }
+    if (result.rows.length === 0) return res.status(404).json({ message: "Barbero no encontrado" });
+    res.status(200).json({ message: 'Cortes asignados correctamente.', id });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error en el servidor");
+  }
 }
 
 export {
-  getAllBarbers, getBarber, createBarber, deleteBarber, updateBarber
+  getAllBarbers, getBarber, createBarber, deleteBarber, updateBarber, addHaircutsToBarber
 }

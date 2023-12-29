@@ -1,0 +1,54 @@
+.container-btn-choose-haircut {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 32px;
+  padding: 24px;
+}
+
+.btn-choose-haircut {
+  padding: 24px;
+  border: 1px solid var(--primary-color);
+  flex: 1;
+  cursor: pointer;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 150px;
+  border-radius: 16px;
+}
+
+.btn-choose-haircut.active,
+.btn-choose-haircut:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transition: var(--tran-05);
+  font-weight: 600;
+}
+
+.btn-add-haircut {
+  padding: 24px;
+  border: 1px solid var(--primary-color);
+  flex: 1;
+  cursor: pointer;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 75px;
+  border-radius: 16px;
+}
+
+.btn-add-haircut.active,
+.btn-add-haircut:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transition: var(--tran-05);
+  font-weight: 600;
+}
+
+.btn-save-changes {
+  padding: 12px;
+  margin-bottom: 20px;
+}

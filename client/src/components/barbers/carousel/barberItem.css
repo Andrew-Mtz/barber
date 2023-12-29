@@ -48,6 +48,7 @@
   height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
   display: flex;
   align-items: flex-end;
   width: 330px;
@@ -125,7 +126,7 @@
 }
 
 .expand-button.active {
-  background-color: #1976d2;
+  background-color: var(--primary-color);
   opacity: 100%;
 }
 

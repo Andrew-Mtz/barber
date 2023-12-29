@@ -1,0 +1,9 @@
+.link-lists-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.card-header-link-list {
+  background-color: var(--secondary-color);
+  color: var(--primary-text-color);
+}

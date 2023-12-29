@@ -44,7 +44,7 @@ const BarberList = ({ onBarberSelect, selectedId }) => {
       {barbers?.map((barber) => (
         <Barber key={barber.id}
           onSelect={onBarberSelect}
-          url={barber.barber_image_url}
+          url={barber.image.url}
           name={barber.name}
           lastName={barber.last_name}
           description={barber.description}

@@ -21,6 +21,8 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
     setSelectedMedia(null);
   };
 
+  console.log(barber)
+
   const getMediaType = (url) => {
     const fileExtension = url?.split('.').pop().toLowerCase();
     if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
@@ -82,7 +84,7 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
     <Box
       className={`barber-card ${oneSelected ? expanded ? 'expanded' : 'minimal' : ''}`}
     >
-      <Box className={'img-section'} sx={{ backgroundImage: `url(${barber.barber_image_url})` }}>
+      <Box className={'img-section'} sx={{ backgroundImage: `url(${barber.image.url})` }}>
         {!expanded && <Box className={`card-container-text ${oneSelected ? 'minimal' : ''}`}>
           <Box display={'flex'} justifyContent={'space-between'}>
             <Typography gutterBottom variant="h5">
@@ -99,7 +101,7 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
           <Box className="barber-data-section">
             <Box sx={{display: 'flex', alignItems: 'baseline'}}>
               <Typography variant='h4' mr={4} color="text.secondary">{barber.name} {barber.last_name}</Typography>
-              <Typography variant="h5" color="text.secondary"><StarRateIcon sx={{ color: '#faaf00' }} /> {parseFloat(barber.average_rating).toFixed(1)}</Typography>
+              {barber.average_rating && <Typography variant="h5" color="text.secondary"><StarRateIcon sx={{ color: 'var(--primary-color)' }} /> {parseFloat(barber.average_rating).toFixed(1)}</Typography>}
             </Box>
             <Typography gutterBottom variant="body2" color="text.secondary">{barber.full_description}</Typography>
           </Box>
@@ -112,10 +114,11 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
                 )
               })}
             </Slider>
+            {reviews?.length === 0 && <Typography>Aún no hay reseñas hechas</Typography>}
           </Box>
           <Box className="barber-gallery">
             <Typography gutterBottom variant="h5" color="text.secondary">Algunos cortes realizados:</Typography>
-            {barber?.haircut_image_urls?.map((mediaUrl, index) => {
+            {barber?.hc_by_barber[0] !== null && barber?.hc_by_barber?.map((mediaUrl, index) => {
               const mediaType = getMediaType(mediaUrl);
 
               return (
@@ -141,6 +144,7 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
                 </div>
               );
             })}
+            {barber?.hc_by_barber[0] === null && <Typography>No hay cortes publicados</Typography>}
           </Box>
         </Box>
       )}
