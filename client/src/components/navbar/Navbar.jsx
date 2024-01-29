@@ -6,9 +6,10 @@ import { adminMenu } from './menus/adminMenu';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/ValidationContext';
 
-const Navbar = ({ isAdmin, isBarber }) => {
-
+const Navbar = () => {
+  const { isAdmin, isBarber } = useAuth();
   const navigate = useNavigate()
   const [state, setState] = React.useState(false);
 
@@ -49,7 +50,7 @@ const Navbar = ({ isAdmin, isBarber }) => {
         display: 'flex', justifyContent: 'space-between',
         padding: 5, color: 'white'
       }}>
-        <Typography variant='h6'>
+        <Typography variant='h6' component='p'>
           MENU
         </Typography>
         <CloseIcon onClick={toggleDrawer} sx={{ cursor: 'pointer' }} />

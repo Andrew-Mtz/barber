@@ -1,27 +1,14 @@
 import pool from "../db.js";
 
-const getAllReviews = async (req, res) => {
-  try {
-    const allReviewsQuery = `
-    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name FROM reviews as r
-    WHERE is_pending = false
-    ORDER BY created_at DESC
-    LIMIT 10;
-  `;
-    const allReviews = await pool.query(allReviewsQuery)
-    res.json(allReviews.rows)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 const getReviewsByBarber = async (req, res) => {
   try {
     const existingReviewQuery = `
-    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name FROM reviews as r
+    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name, b.name as barber_name, b.last_name as barber_last_name
+    FROM reviews as r
+    LEFT JOIN barbers as b ON r.barber_id = b.id
     WHERE barber_id = $1 AND is_pending = false
-    ORDER BY created_at DESC
-    LIMIT 9;
+    ORDER BY DATE(created_at) DESC, rating DESC
+    LIMIT 10;
   `;
     const selectedBarberId = req.query.barber_id;
     const existingReviewResult = await pool.query(existingReviewQuery, [selectedBarberId]);
@@ -34,7 +21,9 @@ const getReviewsByBarber = async (req, res) => {
 const getMyReview = async (req, res) => {
   try {
     const existingReviewQuery = `
-    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name FROM reviews as r
+    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name, b.name as barber_name, b.last_name as barber_last_name
+    FROM reviews as r
+    LEFT JOIN barbers as b ON r.barber_id = b.id
     WHERE r.id = $1 
   `;
     const selectedReviewId = req.query.review_id;
@@ -82,8 +71,8 @@ const createReview = async (req, res) => {
 }
 
 const updateReview = async (hourToExpire) => {
-  const actualDate = new Date().toISOString().split('T')[0];
   try {
+    const actualDate = new Date().toISOString().split('T')[0];
     // Ejecuta una consulta SQL para actualizar las reservas
     const query = `
       UPDATE booking
@@ -105,10 +94,69 @@ const updateReview = async (hourToExpire) => {
     console.error('Error al actualizar las reservas:', error);
   }
 }
+
+const getFilteredReviews = async (req, res) => {
+  try {
+    const barber = req.query.barber || 'all';
+    const haircut = req.query.haircut || 'all';
+    const type = req.query.type || 'default';
+
+    let orderByClause;
+
+    // Configurar el tipo de orden
+    switch (type) {
+      case 'recents':
+        orderByClause = 'ORDER BY created_at DESC';
+        break;
+      case 'most_value':
+        orderByClause = 'ORDER BY rating DESC';
+        break;
+      default:
+        orderByClause = ''; // Orden por defecto o 'default'
+        break;
+    }
+
+    // Configurar las condiciones WHERE
+    const whereConditions = [];
+    const whereParams = [];
+
+    if (barber !== 'all') {
+      whereConditions.push('barber_id = $1');
+      whereParams.push(barber);
+    }
+
+    if (haircut !== 'all') {
+      const haircutIndex = barber !== 'all' ? whereParams.length + 1 : 1;
+      whereConditions.push(`haircuts_id = $${haircutIndex}`);
+      whereParams.push(haircut);
+    }
+
+    whereConditions.push('is_pending = false');
+
+    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+
+    const existingReviewQuery = `
+      SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name, b.name as barber_name, b.last_name as barber_last_name
+      FROM reviews as r
+      LEFT JOIN barbers as b ON r.barber_id = b.id
+      ${whereClause}
+      ${orderByClause};
+    `;
+
+    console.log(whereParams)
+
+    const existingReviewResult = await pool.query(existingReviewQuery, whereParams);
+    res.json(existingReviewResult.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 export {
-  getAllReviews,
   getReviewsByBarber,
   getMyReview,
   createReview,
   updateReview,
+  getFilteredReviews
 }

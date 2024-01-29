@@ -1,6 +1,7 @@
 .link-lists-container {
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 
 .card-header-link-list {

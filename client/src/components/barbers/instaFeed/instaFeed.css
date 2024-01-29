@@ -1,0 +1,30 @@
+.containerInstaFeed {
+  width: 100%;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.itemInstaFeed {
+  overflow: hidden;
+  transition: 0.4s;
+}
+
+.itemInstaFeed img, .itemInstaFeed video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.itemInstaFeed:hover img, .itemInstaFeed:hover video {
+  filter: brightness(1.3);
+  cursor: pointer;
+}
+
+@media (max-width: 320px) {
+  .containerInstaFeed {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+ }

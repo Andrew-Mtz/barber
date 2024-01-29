@@ -73,8 +73,8 @@ export const sendBookingCanceledEmail = (correoDestino, nombreUsuario, date) => 
   });
 }
 
-export const sendContactEmail = (name, email, message) => {
-  const asunto = '¡Contacto por Barberia!';
+export const sendContactEmail = (name, nombreUsuario, email, message) => {
+  const asunto = `¡Contacto por Barberia de ${nombreUsuario}!`;
   const remitente = `${name} <${email}>`
 
   const opcionesCorreo = {

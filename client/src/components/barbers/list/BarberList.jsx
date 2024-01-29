@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 import React from 'react'
-import Barber from './Barber'
+import BarberListItem from './BarberListItem'
 
 const boxStyle = {
   display: 'flex',
@@ -42,7 +42,7 @@ const BarberList = ({ onBarberSelect, selectedId }) => {
   return (
     <Box sx={boxStyle}>
       {barbers?.map((barber) => (
-        <Barber key={barber.id}
+        <BarberListItem key={barber.id}
           onSelect={onBarberSelect}
           url={barber.image.url}
           name={barber.name}

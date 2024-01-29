@@ -14,7 +14,7 @@ export const accountStyles = {
     padding: 4,
     paddingBottom: 0,
     '@media (max-width: 425px)': {
-      width: '300px'
+      width: 'auto'
     },
   },
   headerContainer: {

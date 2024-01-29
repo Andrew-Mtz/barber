@@ -59,3 +59,13 @@
 .flip-card-back {
   transform: rotateY(180deg);
 }
+
+@media (max-width: 425px) {
+  .flip-card {
+    width: 100%;
+  }
+
+  .form-contact>.title {
+    text-align: center;
+  }
+}

@@ -28,12 +28,12 @@
   max-width: none;
   order: 1;
   height: 570px;
+  background-color: #eaeded;
 }
 
 .barber-expanded {
   padding: 1.5em;
   text-align: start;
-  background-color: #eaeded;
   flex: 1;
   display: flex;
   gap: 25px;
@@ -144,12 +144,12 @@
 
   .barber-card.expanded {
     max-width: 330px;
-    order: 2;
   }
 
   .barber-card.expanded>.img-section {
     min-height: 55%;
     max-height: 55%;
+    margin-bottom: 20px;
   }
 
   .barber-gallery {

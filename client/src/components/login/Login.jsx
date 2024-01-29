@@ -1,11 +1,13 @@
 import React from 'react'
 import { loginStyles } from "./login.style.js"
 import { Alert, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
+import { useAuth } from '../../context/ValidationContext.jsx'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const Login = ({ checkAuth }) => {
-  const [account, setAccount] = React.useState({ email: "", password: "" });
+const Login = () => {
+  const { checkAuth } = useAuth();
+  const [account, setAccount] = React.useState({ email: "", password: "", rememberMe: false });
   const [errors, setErrors] = React.useState({ email: "", password: "" });
   const [formError, setFormError] = React.useState("")
 
@@ -16,22 +18,37 @@ const Login = ({ checkAuth }) => {
     setFormError("");
   }
 
-  const validateFields = (property) => {
-    if (account[property] === "") {
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
-    } else {
-      if (property === "email" && !isEmailValid(account.email)) return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Formato de email invalido" }));
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
+  const handleRemember = (event) => {
+    setAccount({ ...account, rememberMe: event.target.checked });
+  };
+
+  const validateFields = async (property) => {
+    const { email } = account;
+    const errorMessages = {
+      email: "Formato de email invalido",
+      default: "Este campo es requerido",
+    };
+
+    if (!account[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
     }
+
+    if (property === "email" && email && !isEmailValid(email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.email }));
+      throw errorMessages.email;
+    }
+
+    setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
 
   const isEmailValid = (email) => {
-    return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+    return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)
   };
 
-  const logUser = async (email, password) => {
+  const logUser = async (email, password, rememberMe) => {
     try {
-      const body = { email, password }
+      const body = { email, password, rememberMe }
 
       const response = await fetch(`${baseUrl}/login`, {
         method: "POST",
@@ -55,14 +72,14 @@ const Login = ({ checkAuth }) => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    validateFields("email")
-    validateFields("password")
-
-    if (!!errors.email || !!errors.password) return console.log("invalid")
-
-    logUser(account.email, account.password)
+    await Promise.all([
+      validateFields("email"),
+      validateFields("password"),
+    ])
+      .then(() => logUser(account.email, account.password, account.rememberMe))
+      .catch((err) => { });
   };
   return (
     <form style={loginStyles.form} onSubmit={handleSubmit}>
@@ -71,7 +88,7 @@ const Login = ({ checkAuth }) => {
       </Alert>}
       <TextField
         onChange={(event) => handleAccount("email", event)}
-        onBlur={() => validateFields("email")}
+        onBlur={() => validateFields("email").catch(() => { })}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -85,7 +102,7 @@ const Login = ({ checkAuth }) => {
       />
       <TextField
         onChange={(event) => handleAccount("password", event)}
-        onBlur={() => validateFields("password")}
+        onBlur={() => validateFields("password").catch(() => { })}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -99,8 +116,8 @@ const Login = ({ checkAuth }) => {
       />
       <Typography>{errors.form}</Typography>
       <FormControlLabel
-        control={<Checkbox value="remember" color="primary" />}
-        label="Remember me"
+        control={<Checkbox checked={account.rememberMe} onChange={handleRemember} color="primary" />}
+        label="Recuerdame"
         sx={loginStyles.rememberBtnContainer}
       />
       <Button

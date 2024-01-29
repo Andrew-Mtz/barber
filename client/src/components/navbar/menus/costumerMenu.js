@@ -4,7 +4,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import GroupIcon from '@mui/icons-material/Group';
 import EmailIcon from '@mui/icons-material/Email';
-import ReviewsIcon from '@mui/icons-material/Reviews';
+import CommentIcon from '@mui/icons-material/Comment';
 
 export const costumerMenu = [
   {
@@ -29,7 +29,7 @@ export const costumerMenu = [
   },
   {
     "title": "Reseñas",
-    "icon": ReviewsIcon,
+    "icon": CommentIcon,
     "link": "/reviews"
   },
   {

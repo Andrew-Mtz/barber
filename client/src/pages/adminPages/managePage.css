@@ -41,9 +41,10 @@ nav .menu-items {
 .menu-items li {
     list-style: none;
     margin-bottom: 10px;
+    cursor: pointer;
 }
 
-.menu-items li a {
+.menu-items li p {
     display: flex;
     align-items: center;
     height: 50px;
@@ -55,7 +56,7 @@ nav .menu-items {
     padding-left: 20px;
 }
 
-.nav-links li a:hover:before {
+.nav-links li p:hover:before {
     content: "";
     position: absolute;
     left: -15px;
@@ -65,11 +66,11 @@ nav .menu-items {
     background-color: var(--primary-color);
 }
 
-body.dark li a:hover:before {
+body.dark li p:hover:before {
     background-color: var(--secondary-text-color);
 }
 
-.menu-items li a .icon {
+.menu-items li p .icon {
     font-size: 21px;
     min-width: 25px;
     margin-right: 10px;
@@ -80,27 +81,27 @@ body.dark li a:hover:before {
     color: var(--black-light-color);
 }
 
-.menu-items li a .link-name {
+.menu-items li p .link-name {
     font-size: 18px;
     font-weight: 400;
     color: var(--black-light-color);
     transition: var(--tran-05);
 }
 
-nav.close li a .link-name {
+nav.close li p .link-name {
     opacity: 0;
     pointer-events: none;
 }
 
-.nav-links li a:hover .icon,
-.nav-links li a:hover .link-name,
-.nav-links li a .icon.active,
-.nav-links li a .link-name.active {
+.nav-links li p:hover .icon,
+.nav-links li p:hover .link-name,
+.nav-links li p .icon.active,
+.nav-links li p .link-name.active {
     color: var(--primary-color);
 }
 
-body.dark .nav-links li a:hover .icon,
-body.dark .nav-links li a:hover .link-name {
+body.dark .nav-links li p:hover .icon,
+body.dark .nav-links li p:hover .link-name {
     color: var(--secondary-text-color);
 }
 
@@ -109,7 +110,7 @@ body.dark .nav-links li a:hover .link-name {
     border-top: 1px solid var(--border-color);
 }
 
-.menu-items .logout-mode a .exit-icon {
+.menu-items .logout-mode p .exit-icon {
     color: red;
 }
 
@@ -130,7 +131,7 @@ body.dark .nav-links li a:hover .link-name {
     padding: 10px 14px;
 }
 
-.cp-section-top > .title {
+.cp-section-top>.title {
     font-size: 24px;
     font-weight: 500;
     color: var(--secondary-text-color);
@@ -142,24 +143,24 @@ body.dark .nav-links li a:hover .link-name {
     padding: 24px;
     display: flex;
     justify-content: space-between;
-  }
-  
-  .cp-form-image-container {
-    width: 30%;
-  }
-  
-  .cp-form-inputs-container {
-    width: 65%;
-  }
+}
 
-  .cp-form-btns-container {
+.cp-form-image-container {
+    width: 40%;
+}
+
+.cp-form-inputs-container {
+    width: 55%;
+}
+
+.cp-form-btns-container {
     display: flex;
     justify-content: space-between;
-  }
+}
 
-  .file-input {
+.file-input {
     padding: 16px;
     outline: none;
     border-radius: 10px;
     background: gray;
-  }
+}

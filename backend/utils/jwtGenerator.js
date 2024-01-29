@@ -2,12 +2,14 @@ import jwt from "jsonwebtoken";
 import { config } from 'dotenv'
 config()
 
-const jwtGenerator = (id) => {
+const jwtGenerator = (id, rememberMe = false) => {
   const payload = {
     user: id
-  }
+  };
 
-  return jwt.sign(payload, process.env.JWT_SECRET || 'cat123', { expiresIn: "1hr" })
+  const expiresIn = rememberMe ? "7d" : "1hr";
+
+  return jwt.sign(payload, process.env.JWT_SECRET || 'cat123', { expiresIn })
 }
 
 export default jwtGenerator

@@ -75,9 +75,7 @@ const getLastsBooking = async (req, res) => {
 
 const createBooking = async (req, res) => {
   try {
-    const user_id = req.user
-
-    const { status, barber_id, haircut_id, schedule_id, date_id } = req.body;
+    const user_id = req.user;
 
     // Verificar si el usuario ya tiene una reserva para esta fecha y horario
     const existingBookingQuery = `
@@ -91,6 +89,8 @@ const createBooking = async (req, res) => {
       return res.status(409).json({ error: 'Ya tienes una reserva hecha.' });
     }
 
+    const { status, barber_id, haircut_id, schedule_id, date_id } = req.body;
+
     const query = `
       INSERT INTO booking (status, barber_id, user_id, haircut_id, schedule_id, date_id)
       VALUES ($1, $2, $3, $4, $5, $6)
@@ -101,19 +101,10 @@ const createBooking = async (req, res) => {
     const result = await pool.query(query, values);
     const bookingId = result.rows[0].id;
 
-    const updateQuery = `
-    UPDATE available_schedules
-    SET status = 2
-    WHERE id = $1
-    `;
-    const updateValues = [schedule_id];
-
-    await pool.query(updateQuery, updateValues);
-
     const userQuery = `
-    SELECT name, email, accept_notifications
-    FROM users
-    WHERE id = $1
+      SELECT name, email, accept_notifications
+      FROM users
+      WHERE id = $1
     `;
     const userValues = [user_id];
 
@@ -125,10 +116,10 @@ const createBooking = async (req, res) => {
       const user_email = user.email;
 
       const dateQuery = `
-    SELECT date
-    FROM schedules
-    WHERE id = $1
-    `;
+        SELECT date
+        FROM schedules
+        WHERE id = $1
+      `;
       const dateValues = [date_id];
 
       const dateResult = await pool.query(dateQuery, dateValues);
@@ -136,6 +127,7 @@ const createBooking = async (req, res) => {
 
       sendBookingEmail(user_email, user_name, schedule_date);
     }
+
     res.status(201).json({ message: 'Agendado correctamente.', bookingId });
   } catch (error) {
     if (error.code === '23505' && error.constraint === 'unique_barber_schedule_date') {
@@ -145,19 +137,24 @@ const createBooking = async (req, res) => {
       res.status(500).json({ error: 'Hubo un error al intentar hacer la reservación.' });
     }
   }
-}
+};
 
 const canceleBooking = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Obtener el schedule_id del booking que se va a eliminar
+    // Obtener información de la reserva antes de eliminarla
     const bookingQuery = `
-    SELECT b.schedule_id, u.email AS user_email, u.name AS name, u.accept_notifications, s.date AS schedule_date
-    FROM booking AS b
-    JOIN users AS u ON b.user_id = u.id
-    JOIN schedules AS s ON b.date_id = s.id
-    WHERE b.id = $1;
+      SELECT
+        b.schedule_id,
+        u.email AS user_email,
+        u.name AS name,
+        u.accept_notifications,
+        s.date AS schedule_date
+      FROM booking AS b
+      JOIN users AS u ON b.user_id = u.id
+      JOIN schedules AS s ON b.date_id = s.id
+      WHERE b.id = $1;
     `;
     const bookingResult = await pool.query(bookingQuery, [id]);
 
@@ -165,22 +162,16 @@ const canceleBooking = async (req, res) => {
       return res.status(404).json({ message: "Reserva no encontrada" });
     }
 
-    const schedule_id = bookingResult.rows[0].schedule_id;
-    const user_email = bookingResult.rows[0].user_email;
-    const name = bookingResult.rows[0].name;
-    const schedule_date = bookingResult.rows[0].schedule_date;
+    const { user_email, name, schedule_date } = bookingResult.rows[0];
 
-    // Eliminar la reserva
+    // Eliminar la reserva (el trigger manejará la actualización del estado del horario)
     const deleteQuery = 'DELETE FROM booking WHERE id = $1';
     await pool.query(deleteQuery, [id]);
-
-    // Actualizar el estado del horario en available_schedules
-    const updateQuery = 'UPDATE available_schedules SET status = 1 WHERE id = $1';
-    await pool.query(updateQuery, [schedule_id]);
 
     if (bookingResult.rows[0].accept_notifications) {
       sendBookingCanceledEmail(user_email, name, schedule_date);
     }
+
     return res.status(204).json("Reserva cancelada exitosamente");
   } catch (error) {
     return res.status(500).json({ error: "Hubo un error al cancelar la reserva" });

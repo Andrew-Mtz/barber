@@ -1,11 +1,13 @@
 import React from 'react'
-import { Box, Card, CardHeader, Checkbox, Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import './linkBarber&Haircut.css'
+import CustomList from './CustomList';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const LinkBarberAndHaircut = () => {
   const [checkedBarber, setCheckedBarber] = React.useState([0]);
+  const [originalHaircuts, setOriginalHaircuts] = React.useState([]);
   const [checkedHaircuts, setCheckedHaircuts] = React.useState([]);
   const [barbers, setBarbers] = React.useState([])
   const [haircuts, setHaircuts] = React.useState([])
@@ -71,8 +73,8 @@ const LinkBarberAndHaircut = () => {
       });
       if (response.status === 200) {
         const data = await response.json();
-        console.log(data)
         setCheckedHaircuts(data)
+        setOriginalHaircuts(data)
       }
       return //setBarbers(response.statusText)
     } catch (error) {
@@ -80,56 +82,48 @@ const LinkBarberAndHaircut = () => {
     }
   }
 
-  const customList = (title, items, onFunction, checks) => (
-    <Card>
-      <CardHeader
-        className='card-header-link-list'
-        sx={{ px: 2, py: 1 }}
-        title={title}
-      />
-      <Divider />
-      <List
-        sx={{
-          bgcolor: 'var(--panel-color)',
-          overflow: 'auto',
-        }}
-        dense
-        component="div"
-        role="list"
-      >
-        {items?.map((value) => {
-          const labelId = `transfer-list-all-item-${value.name}-label`;
+  const saveChanges = async () => {
+    try {
+      const body = { barberId: checkedBarber[0], haircutIds: checkedHaircuts, linkedHaircutsIds: originalHaircuts }
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${baseUrl}/associateHaircutsWithBarber`, {
+        method: "POST",
+        headers:
+        {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(body)
+      })
 
-          return (
-            <ListItem
-              key={value.id}
-              role="listitem"
-              button
-              onClick={() => onFunction(value.id)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checks.includes(value.id)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    'aria-labelledby': labelId,
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={value.name} />
-            </ListItem>
-          );
-        })}
-      </List>
-    </Card>
-  );
+      const parseRes = await response.json()
 
+      if (response.status === 409) return console.log(parseRes)
+
+      console.log('exito')
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const sameArrays = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    const sortedArr1 = arr1.slice().sort();
+    const sortedArr2 = arr2.slice().sort();
+
+    return sortedArr1.every((value, index) => value === sortedArr2[index]);
+  }
 
   return (
     <Box className='link-lists-container'>
-      {customList('Barberos', barbers, handleToggleBarber, checkedBarber)}
-      {customList('Cortes de pelo', haircuts, handleToggleHaircut, checkedHaircuts)}
+      <CustomList title={'Barberos'} items={barbers} onFunction={handleToggleBarber} checks={checkedBarber} />
+      <CustomList title={'Cortes de pelo'} items={haircuts} onFunction={handleToggleHaircut} checks={checkedHaircuts} />
+      <Button variant='contained' disabled={sameArrays(originalHaircuts, checkedHaircuts)} onClick={saveChanges}>Guardar cambios</Button>
     </Box>
   )
 }

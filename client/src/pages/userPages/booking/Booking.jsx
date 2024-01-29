@@ -7,12 +7,14 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { useLocation, useNavigate } from 'react-router-dom'
 import BarberList from '../../../components/barbers/list/BarberList.jsx';
 import HaircutList from '../../../components/haircuts/HaircutList.jsx';
-import Calendar from '../../../components/Calendar.jsx';
+import Calendar from '../../../components/calendar/Calendar.jsx';
 import DialogConfirm from '../../../components/infoMessage/DialogConfirm.jsx';
 import SuccesfullBooking from '../../../components/infoMessage/SuccesfullBooking.jsx';
 import ErrorBooking from '../../../components/infoMessage/ErrorBooking.jsx';
+import { useAuth } from '../../../context/ValidationContext.jsx';
 
-const Booking = ({ isLoggedIn }) => {
+const Booking = () => {
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate()
   const location = useLocation();
 
@@ -81,12 +83,18 @@ const Booking = ({ isLoggedIn }) => {
     }));
   };
 
-  const handleScheduleSelect = (scheduleId, dateId, date, hour) => {
+  const handleDaySelect = (dateId, date) => {
+    setBookingData((prevBookingData) => ({
+      ...prevBookingData,
+      date: date,
+      date_id: dateId
+    }));
+  };
+
+  const handleHourSelect = (scheduleId, hour) => {
     setBookingData((prevBookingData) => ({
       ...prevBookingData,
       schedule_id: scheduleId,
-      date: date,
-      date_id: dateId,
       hour: hour
     }));
   };
@@ -179,7 +187,7 @@ const Booking = ({ isLoggedIn }) => {
   const stepComponents = [
     <BarberList selectedId={bookingData.barber_id} onBarberSelect={handleBarberSelect} />,
     <HaircutList selectedId={bookingData.haircut_id} selectedBarberId={bookingData.barber_id} onHaircutSelect={handleHaircutSelect} />,
-    <Calendar selectedBarberId={bookingData.barber_id} selectedId={bookingData.schedule_id} selectedDateId={bookingData.date_id} onScheduleSelect={handleScheduleSelect} />,
+    <Calendar selectedBarberId={bookingData.barber_id} selectedId={bookingData.schedule_id} selectedDateId={bookingData.date_id} onDaySelect={handleDaySelect} onHourSelect={handleHourSelect} />,
   ];
   return (
     <Box sx={{ width: '100%' }}>

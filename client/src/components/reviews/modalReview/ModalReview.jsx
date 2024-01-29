@@ -66,7 +66,7 @@ const ModalReview = ({ review_id, open, handleClose }) => {
       aria-label="modal-modal-multiline"
     >
       <Box sx={style}>
-        <Typography id="modal-modal-title" sx={{ mb: 3, color: 'black' }} variant="h6" component="h2">Evalua el corte y deja un comentario!</Typography>
+        <Typography id="modal-modal-title" mb={3} sx={{ color: 'black' }} variant="h5" component="h3">Evalua el corte y deja un comentario!</Typography>
         <Box>
           <Rating
             id='modal-modal-rating'

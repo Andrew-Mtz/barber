@@ -6,8 +6,10 @@ import { useLocation } from 'react-router-dom';
 import Login from '../../components/login/Login.jsx';
 import Register from '../../components/register/Register.jsx';
 import UserData from '../../components/UserData.jsx';
+import { useAuth } from '../../context/ValidationContext.jsx';
 
-const Account = ({ isLoggedIn, checkAuth }) => {
+const Account = () => {
+  const { isLoggedIn } = useAuth();
   const location = useLocation();
 
   const [display, setDisplay] = React.useState("Sign in");
@@ -16,7 +18,7 @@ const Account = ({ isLoggedIn, checkAuth }) => {
 
   return (
     <>
-      {isLoggedIn ? <UserData checkAuth={checkAuth} isBookingRoute={isBookingRoute} /> :
+      {isLoggedIn ? <UserData isBookingRoute={isBookingRoute} /> :
         <Grid
           item
           sx={accountStyles.size}
@@ -32,7 +34,7 @@ const Account = ({ isLoggedIn, checkAuth }) => {
                 <Avatar sx={display === "Sign in" ? accountStyles.avatar : accountStyles.inactiveAvatar}>
                   <LockOutlinedIcon />
                 </Avatar>
-                <Typography variant="body1" sx={display === "Sign in" ? accountStyles.activeText : accountStyles.inactiveText}>
+                <Typography variant="body1" component='p' sx={display === "Sign in" ? accountStyles.activeText : accountStyles.inactiveText}>
                   Sign in
                 </Typography>
               </Button>
@@ -41,12 +43,12 @@ const Account = ({ isLoggedIn, checkAuth }) => {
                 <Avatar sx={display === "Sign up" ? accountStyles.avatar : accountStyles.inactiveAvatar}>
                   <LockOutlinedIcon />
                 </Avatar>
-                <Typography variant="body1" sx={display === "Sign up" ? accountStyles.activeText : accountStyles.inactiveText}>
+                <Typography variant="body1" component='p' sx={display === "Sign up" ? accountStyles.activeText : accountStyles.inactiveText}>
                   Sign up
                 </Typography>
               </Button>
             </Box>
-            {display === "Sign in" ? <Login checkAuth={checkAuth} /> : <Register checkAuth={checkAuth} />}
+            {display === "Sign in" ? <Login /> : <Register />}
           </Paper>
         </Grid>}
     </>

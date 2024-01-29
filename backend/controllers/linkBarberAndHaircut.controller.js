@@ -53,8 +53,8 @@ const getHaircuts = async (year, month) => {
 
 const getLinkedHaircuts = async (req, res) => {
   try {
-    const id = req.query.id
-    const result = await pool.query(`SELECT ARRAY_AGG(haircut_id) AS id FROM barber_haircuts WHERE barber_id = $1`, [id]);
+    const barberId = req.query.id
+    const result = await pool.query(`SELECT ARRAY_AGG(haircut_id) AS id FROM barber_haircuts WHERE barber_id = $1`, [barberId]);
     const haircutIds = result.rows[0].id || [];
     res.json(haircutIds);
   } catch (error) {
@@ -62,26 +62,42 @@ const getLinkedHaircuts = async (req, res) => {
   }
 }
 
-const createLinkBarberHaircuts = async (req, res) => {
+const associateHaircutsWithBarber = async (req, res) => {
   try {
-    const { barberId, haircutIds } = req.body;
+    const { barberId, haircutIds, linkedHaircutsIds } = req.body;
+    await pool.query('BEGIN');
 
-    // Iterar sobre cada haircutId y realizar la inserción individual
-    for (const haircutId of haircutIds) {
-      const insertQuery = 'INSERT INTO barber_haircuts (barber_id, haircut_id) VALUES ($1, $2)';
-      const params = [barberId, haircutId];
-
-      try {
-        await pool.query(insertQuery, params);
-      } catch (error) {
-        console.error(`Error al asignar corte ${haircutId} al barbero ${barberId}:`, error.message);
+    // Asociar nuevos cortes
+    for (const newHaircutId of haircutIds) {
+      // Verificar si el corte ya está vinculado
+      if (!linkedHaircutsIds.includes(newHaircutId)) {
+        await pool.query(
+          'INSERT INTO barber_haircuts (barber_id, haircut_id) VALUES ($1, $2)',
+          [barberId, newHaircutId]
+        );
       }
     }
+
+    // Desasociar cortes existentes que no están en la lista haircutIds
+    for (const existingHaircutId of linkedHaircutsIds) {
+      if (!haircutIds.includes(existingHaircutId)) {
+        await pool.query(
+          'DELETE FROM barber_haircuts WHERE barber_id = $1 AND haircut_id = $2',
+          [barberId, existingHaircutId]
+        );
+      }
+    }
+    // Confirmar la transacción
+    await pool.query('COMMIT');
+    res.status(200).json({ success: true, message: 'Cortes asociados/desasociados correctamente.' });
   } catch (error) {
-    console.log(error)
+    // Si hay algún error, revertir la transacción
+    await pool.query('ROLLBACK');
+    console.error('Error en la transacción:', error);
+    res.status(500).json({ success: false, message: 'Error en el servidor.' });
   }
 }
 
 export {
-  getBarbersAndHaircuts, getLinkedHaircuts, createLinkBarberHaircuts
+  getBarbersAndHaircuts, getLinkedHaircuts, associateHaircutsWithBarber,
 }

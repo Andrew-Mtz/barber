@@ -1,7 +1,8 @@
-import React from 'react'
-import './managePage.css'
-import { cpBody, cpMenu } from './cpMenu'
+import React from 'react';
+import { cpBody, cpMenu } from './cpMenu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import './managePage.css';
+import { Box, Typography } from '@mui/material';
 
 const ManagePage = () => {
   const [secTitle, setSecTitle] = React.useState("Administrar barberos")
@@ -12,39 +13,43 @@ const ManagePage = () => {
   }
 
   return (
-    <div className='container-control-panel'>
+    <Box className='container-control-panel'>
       <nav>
-        <div className="logo-name">
-          <span className="logo_name">Panel administrador</span>
-        </div>
-        <div className="menu-items">
+        <Box className="logo-name">
+          <Typography component='span' className="logo_name">Panel administrador</Typography>
+        </Box>
+        <Box className="menu-items">
           <ul className="nav-links">
             {cpMenu.map((item, index) => (
-              <li key={index} onClick={() => setSecTitle(item.title)}><a href="#">
-                <item.icon className={`icon ${secTitle === item.title && 'active'}`} />
-                <span className={`link-name ${secTitle === item.title && 'active'}`}>{item.title}</span>
-              </a></li>
+              <li key={index} onClick={() => setSecTitle(item.title)}>
+                <Typography>
+                  <item.icon className={`icon ${secTitle === item.title && 'active'}`} />
+                  <Typography component='span' className={`link-name ${secTitle === item.title && 'active'}`}>{item.title}</Typography>
+                </Typography>
+              </li>
             ))}
           </ul>
           <ul className="logout-mode">
-            <li onClick={logOut}><a href="#">
-              <LogoutIcon className='icon exit-icon' />
-              <span className="link-name">Cerrar sesion</span>
-            </a></li>
+            <li onClick={logOut}>
+              <Typography>
+                <LogoutIcon className='icon exit-icon' />
+                <Typography component='span' className="link-name">Cerrar sesion</Typography>
+              </Typography>
+            </li>
           </ul>
-        </div>
+        </Box>
       </nav>
-      <section className="cp-section">
-        <div className='cp-section-top'>
-          <p className='title'>{secTitle}</p>
-        </div>
+      <Box component='section' className="cp-section">
+        <Box className='cp-section-top'>
+          <Typography className='title'>{secTitle}</Typography>
+        </Box>
         {cpBody?.map((item, index) => (
-          <div key={index}>
+          <Box key={index}>
             {item.title === secTitle && <item.component />}
-          </div>
+          </Box>
         ))}
-      </section>
-    </div>
+      </Box>
+    </Box>
   )
 }
 

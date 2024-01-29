@@ -24,14 +24,14 @@ const signUp = async (req, res) => {
 
     //enter the new user inside our database
     const newUser = await pool.query(
-      "INSERT INTO users (name, last_name, email, phone, password, profile_image_url, accept_notifications, remember_me, user_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
-      [name, last_name, email, phone, bcryptPassword, profileImageUrl, acceptNotifications, rememberMe, userType])
+      "INSERT INTO users (name, last_name, email, phone, password, profile_image_url, accept_notifications, user_type) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      [name, last_name, email, phone, bcryptPassword, profileImageUrl, acceptNotifications, userType])
 
     if (acceptNotifications) {
       sendWelcomeEmail(email, name);
     }
 
-    const token = jwtGenerator(newUser.rows[0].id)
+    const token = jwtGenerator(newUser.rows[0].id, rememberMe)
 
     res.json({ token })
   } catch (err) {
@@ -45,7 +45,7 @@ const signIn = async (req, res) => {
   try {
 
     //destructure
-    const { email, password } = req.body
+    const { email, password, rememberMe } = req.body
 
     //check if user doesn't exist
     const user = await pool.query("SELECT * FROM users where email = $1", [email])
@@ -58,7 +58,7 @@ const signIn = async (req, res) => {
     if (!validPassword) return res.status(409).json("Los datos proporcionados son incorrectos")
 
     //return the token
-    const token = jwtGenerator(user.rows[0].id)
+    const token = jwtGenerator(user.rows[0].id, rememberMe)
     const userType = user.rows[0].user_type
 
     res.json({ token, userType })

@@ -52,4 +52,11 @@
   flex-direction: row-reverse;
   justify-content: space-between;
   margin: 0.75rem 1rem;
+  gap: 10px;
+}
+
+@media (max-width: 425px) {
+  .container-booking {
+    width: auto;
+  }
 }

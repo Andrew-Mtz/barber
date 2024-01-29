@@ -1,0 +1,9 @@
+.income-search-container {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.income-date-input {
+  width: 150px;
+}

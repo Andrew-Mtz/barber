@@ -4,11 +4,13 @@ import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer,
 import DialogConfirm from '../../components/infoMessage/DialogConfirm';
 import LoginAlert from '../../components/loginAlert/LoginAlert';
 import { useNavigate } from 'react-router-dom'
-import ModalReview from '../../components/modalReview/ModalReview';
+import ModalReview from '../../components/reviews/modalReview/ModalReview';
+import { useAuth } from '../../context/ValidationContext';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const MyBooking = ({ isLoggedIn }) => {
+const MyBooking = () => {
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate()
 
   const [open, setOpen] = React.useState(false);
@@ -118,6 +120,9 @@ const MyBooking = ({ isLoggedIn }) => {
       width: '200px',
       '&:hover': {
         backgroundColor: myReservation ? '#fff' : 'rgba(25, 118, 210, 0.04)', // Establece el mismo color de fondo en hover
+      },
+      '@media (max-width: 425px)': {
+        width: 'auto'
       }
     },
     btnInactive: {
@@ -128,6 +133,9 @@ const MyBooking = ({ isLoggedIn }) => {
       width: '200px',
       '&:hover': {
         backgroundColor: !myReservation ? '#fff' : 'rgba(25, 118, 210, 0.04)', // Establece el mismo color de fondo en hover
+      },
+      '@media (max-width: 425px)': {
+        width: 'auto'
       }
     }
   };
@@ -202,9 +210,8 @@ const MyBooking = ({ isLoggedIn }) => {
                             <Button
                               variant='contained'
                               onClick={
-                                () => navigate(`/our-team`, {
+                                () => navigate(`/reviews`, {
                                   state: { 
-                                    barberId: book.barber_id, 
                                     reviewId: book.review_id,
                                     previousPath: 'my-booking'
                                   }

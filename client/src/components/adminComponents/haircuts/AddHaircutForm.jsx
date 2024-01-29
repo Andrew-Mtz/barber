@@ -1,10 +1,12 @@
 import React from 'react'
 import { Alert, Box, Button, TextField } from '@mui/material';
+import { errorMessages } from './errors';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const AddHaircutForm = () => {
   const [newHaircut, setNewHaircut] = React.useState({ name: "", price: "", description: "", image: null })
+  const [imagePreview, setImagePreview] = React.useState(null);
   const [errors, setErrors] = React.useState({ name: "", price: "", description: "", image: "" });
   const [formError, setFormError] = React.useState("")
 
@@ -16,15 +18,25 @@ const AddHaircutForm = () => {
   };
 
   const handleImage = (property, event) => {
-    setNewHaircut((prevBarber) => ({
-      ...prevBarber,
-      [property]: event.target.files[0]
-    }));
+    if (!event.target.files[0]) return setImagePreview(null)
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewHaircut((prevBarber) => ({
+          ...prevBarber,
+          [property]: selectedFile,
+        }));
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
   };
 
-  const validateFields = (property) => {
-    if (newHaircut[property] === "") {
-      return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
+  const validateFields = async (property) => {
+    if (!newHaircut[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
     }
     setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
@@ -53,23 +65,25 @@ const AddHaircutForm = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    validateFields("name");
-    validateFields("price");
-    validateFields("description");
-    validateFields("image");
-
-    if (!!errors.name || !!errors.price || !!errors.description) return console.log("invalid");
-
-    saveChanges(newHaircut);
+    await Promise.all([
+      validateFields("name"),
+      validateFields("price"),
+      validateFields("description"),
+      validateFields("image"),
+    ])
+      .then(() => saveChanges(newHaircut))
+      .catch((err) => { });
   };
 
   return (
     <>
       <form onSubmit={handleSubmit}>
         <Box className="cp-form-image-container">
-          <input type='file' name='image' className='file-input' onChange={(event) => { handleImage("image", event) }}/>
+          {imagePreview && <img src={imagePreview} width={200} height={250} alt={`Foto ${newHaircut.name}`} />}
+          <input type='file' name='image' className='file-input' onChange={(event) => { handleImage("image", event) }} />
+          <span>{errors.image}</span>
         </Box>
         <Box className="cp-form-inputs-container">
           {formError !== "" && <Alert variant="filled" severity="error">
@@ -77,7 +91,7 @@ const AddHaircutForm = () => {
           </Alert>}
           <TextField
             onChange={(event) => { handleHaircut("name", event); setFormError(""); }}
-            onBlur={() => validateFields("name")}
+            onBlur={() => validateFields("name").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -91,7 +105,7 @@ const AddHaircutForm = () => {
           />
           <TextField
             onChange={(event) => { handleHaircut("price", event); setFormError(""); }}
-            onBlur={() => validateFields("price")}
+            onBlur={() => validateFields("price").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -105,7 +119,7 @@ const AddHaircutForm = () => {
           />
           <TextField
             onChange={(event) => { handleHaircut("description", event); setFormError(""); }}
-            onBlur={() => validateFields("description")}
+            onBlur={() => validateFields("description").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth

@@ -1,10 +1,12 @@
 import React from 'react'
-import { Alert, Box, Button, TextField } from '@mui/material';
+import { Alert, Box, Button, Input, TextField } from '@mui/material';
+import { errorMessages } from './errors';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const AddBarberForm = () => {
   const [newBarber, setNewBarber] = React.useState({ name: "", last_name: "", description: "", full_description: "", phone: "", image: null })
+  const [imagePreview, setImagePreview] = React.useState(null);
   const [errors, setErrors] = React.useState({ name: "", last_name: "", description: "", full_description: "", phone: "", image: "" });
   const [formError, setFormError] = React.useState("")
 
@@ -16,15 +18,42 @@ const AddBarberForm = () => {
   };
 
   const handleImage = (property, event) => {
-    setNewBarber((prevBarber) => ({
-      ...prevBarber,
-      [property]: event.target.files[0]
-    }));
+    if (!event.target.files[0]) return setImagePreview(null)
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewBarber((prevBarber) => ({
+          ...prevBarber,
+          [property]: selectedFile,
+        }));
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
   };
 
-  const validateFields = (property) => {
-    if (newBarber[property] === "") {
-      return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
+  const validateFields = async (property) => {
+    const { phone, description, full_description } = newBarber;
+
+    if (!newBarber[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
+    }
+
+    if (property === "phone" && phone && !isPhoneValid(phone)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.phone }));
+      throw errorMessages.phone;
+    }
+
+    if (property === "description" && description.length > 50) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.description }));
+      throw errorMessages.description;
+    }
+
+    if (property === "full_description" && full_description.length < 100) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.full_description }));
+      throw errorMessages.full_description;
     }
     setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
@@ -53,25 +82,32 @@ const AddBarberForm = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const isPhoneValid = (phone) => {
+    return /^[0-9]{9}$/.test(phone)
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    validateFields("name")
-    validateFields("last_name")
-    validateFields("description")
-    validateFields("full_description")
-    validateFields("phone")
-    validateFields("image")
 
-    if (!!errors.name || !!errors.last_name || !!errors.description || !!errors.full_description) return console.log("invalid")
-
-    saveChanges(newBarber)
+    await Promise.all([
+      validateFields("name"),
+      validateFields("last_name"),
+      validateFields("description"),
+      validateFields("full_description"),
+      validateFields("phone"),
+      validateFields("image"),
+    ])
+      .then(() => saveChanges(newBarber))
+      .catch((err) => { });
   };
 
   return (
     <>
       <form onSubmit={handleSubmit} >
         <Box className="cp-form-image-container">
-          <input type='file' name='image' className='file-input' onChange={(event) => { handleImage("image", event) }} />
+          {imagePreview && <img src={imagePreview} width={200} height={250} alt={`Foto de ${newBarber.name} ${newBarber.last_name}`} />}
+          <input type='file' name='image' className='file-input' accept='image/jpeg, image/png' onChange={(event) => { handleImage("image", event) }} />
+          <span>{errors.image}</span>
         </Box>
         <Box className="cp-form-inputs-container">
           {formError !== "" && <Alert variant="filled" severity="error">
@@ -79,7 +115,7 @@ const AddBarberForm = () => {
           </Alert>}
           <TextField
             onChange={(event) => { handleBarber("name", event); setFormError(""); }}
-            onBlur={() => validateFields("name")}
+            onBlur={() => validateFields("name").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -93,7 +129,7 @@ const AddBarberForm = () => {
           />
           <TextField
             onChange={(event) => { handleBarber("last_name", event); setFormError(""); }}
-            onBlur={() => validateFields("last_name")}
+            onBlur={() => validateFields("last_name").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -107,7 +143,7 @@ const AddBarberForm = () => {
           />
           <TextField
             onChange={(event) => { handleBarber("description", event); setFormError(""); }}
-            onBlur={() => validateFields("description")}
+            onBlur={() => validateFields("description").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -121,7 +157,7 @@ const AddBarberForm = () => {
           />
           <TextField
             onChange={(event) => { handleBarber("full_description", event); setFormError(""); }}
-            onBlur={() => validateFields("full_description")}
+            onBlur={() => validateFields("full_description").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -129,20 +165,22 @@ const AddBarberForm = () => {
             label="Descripcion completa*"
             name="full_description"
             type='text'
+            multiline
+            rows={4}
             helperText={errors.full_description}
             error={!!errors.full_description}
             value={newBarber.full_description || ''}
           />
           <TextField
             onChange={(event) => { handleBarber("phone", event); setFormError(""); }}
-            onBlur={() => validateFields("phone")}
+            onBlur={() => validateFields("phone").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
             id="phone"
             label="Celular*"
             name="phone"
-            type='text'
+            type='tel'
             helperText={errors.phone}
             error={!!errors.phone}
             value={newBarber.phone || ''}

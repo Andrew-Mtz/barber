@@ -1,4 +1,4 @@
-import { Alert, Box } from '@mui/material'
+import { Box } from '@mui/material'
 import React from 'react'
 import Haircut from './Haircut'
 
@@ -15,11 +15,7 @@ const baseUrl = process.env.REACT_APP_BASEURL
 const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
   const [haircuts, setHaircuts] = React.useState([])
 
-  React.useEffect(() => {
-    getHaircuts()
-  }, [])
-
-  const getHaircuts = async () => {
+  const getHaircuts = React.useCallback(async () => {
     try {
       const response = await fetch(`${baseUrl}/haircut-by-barber?barber_id=${selectedBarberId}`, {
         method: 'get',
@@ -36,7 +32,11 @@ const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
     } catch (error) {
       console.error('Error al obtener los cortes de pelo:', error);
     }
-  }
+  }, [selectedBarberId]);
+
+  React.useEffect(() => {
+    getHaircuts()
+  }, [getHaircuts])
 
   return (
     <Box sx={boxStyle}>

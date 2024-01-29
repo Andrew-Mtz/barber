@@ -3,8 +3,8 @@ CREATE TABLE barbers (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
-  description TEXT NOT NULL,
-  full_description TEXT NOT NULL,
+  description TEXT CHECK (LENGTH(description) <= 50) NOT NULL,
+  full_description TEXT CHECK (LENGTH(full_description) >= 100) NOT NULL,
   phone VARCHAR(20) NOT NULL UNIQUE,
   image JSONB NOT NULL
 );
@@ -17,8 +17,7 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   user_type VARCHAR(20) NOT NULL,
   profile_image_url VARCHAR(255),
-  accept_notifications BOOLEAN,
-  remember_me BOOLEAN
+  accept_notifications BOOLEAN
 );
 CREATE TABLE haircuts (
   id SERIAL PRIMARY KEY,
@@ -36,6 +35,7 @@ CREATE TABLE schedules (
   id SERIAL PRIMARY KEY,
   barber_id INTEGER NOT NULL REFERENCES barbers(id) ON DELETE CASCADE,
   date DATE NOT NULL,
+  status INTEGER NOT NULL DEFAULT 1,
   CONSTRAINT unique_barber_date UNIQUE (barber_id, date)
 );
 CREATE TABLE available_schedules (
@@ -68,11 +68,6 @@ CREATE TABLE reviews (
   user_name VARCHAR(100),
   user_last_name VARCHAR(100)
 );
-CREATE TABLE barber_haircuts_made (
-  id SERIAL PRIMARY KEY,
-  barber_id INTEGER REFERENCES barbers(id) ON DELETE CASCADE,
-  image JSONB NOT NULL
-);
 INSERT INTO barbers (
     name,
     last_name,
@@ -90,44 +85,6 @@ VALUES (
     'Me encanta jugar al futbol y rascarme las bolas',
     '092994277',
     'http://localhost:3001/uploads/barbers/maxi.jpg'
-  );
-INSERT INTO barbers (
-    name,
-    last_name,
-    age,
-    birthdate,
-    description,
-    full_description,
-    phone,
-    barber_image_data
-  )
-VALUES (
-    'Aldo',
-    'Villafan',
-    23,
-    '2000-02-16',
-    'Me encanta jugar al futbol y rascarme las bolas',
-    'Hola soy Aldo, trabajo como barbero hace 2 años. Empece en mi casa aprendiendo viendo tutoriales y a pura prueba y error. Sigo aprendiendo para estar a la altura de cualquier corte que me pidan los clientes.'
-    '092876540',
-    'http://localhost:3001/uploads/barbers/aldo.jpg'
-  );
-INSERT INTO barbers (
-    name,
-    last_name,
-    age,
-    birthdate,
-    description,
-    phone,
-    barber_image_data
-  )
-VALUES (
-    'Genaro',
-    'Lecouna',
-    22,
-    '2001-09-20',
-    'Me encanta jugar al futbol y rascarme las bolas',
-    '092988230',
-    'http://localhost:3001/uploads/barbers/genaro.jpg'
   );
 INSERT INTO haircuts (name, price, description)
 VALUES (
@@ -213,3 +170,41 @@ CREATE TRIGGER delete_review_trigger
 AFTER DELETE ON booking
 FOR EACH ROW
 EXECUTE FUNCTION delete_associated_review();
+
+CREATE OR REPLACE FUNCTION cancel_booking_trigger()
+RETURNS TRIGGER AS $$
+DECLARE
+  booking_schedule_id INT;
+BEGIN
+  -- Obtener el schedule_id del booking que se va a eliminar
+  SELECT schedule_id INTO booking_schedule_id FROM booking WHERE id = OLD.id;
+
+  -- Actualizar el estado del horario en available_schedules
+  UPDATE available_schedules SET status = 1 WHERE id = booking_schedule_id;
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER cancel_booking
+AFTER DELETE ON booking
+FOR EACH ROW
+EXECUTE FUNCTION cancel_booking_trigger();
+
+-- trigger to update status at schedules when booking is created
+CREATE OR REPLACE FUNCTION create_booking_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Actualizar el estado del horario en available_schedules a 2
+  UPDATE available_schedules
+  SET status = 2
+  WHERE id = NEW.schedule_id;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER create_booking
+AFTER INSERT ON booking
+FOR EACH ROW
+EXECUTE FUNCTION create_booking_trigger();

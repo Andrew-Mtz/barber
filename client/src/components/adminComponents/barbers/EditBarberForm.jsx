@@ -1,17 +1,84 @@
 import React from 'react'
 import { Alert, Box, Button, TextField } from '@mui/material'
+import { errorMessages } from './errors'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuccessfullyEdit }) => {
-  const [errors, setErrors] = React.useState({ name: "", last_name: "", description: "", full_description: "" });
+const EditBarberForm = ({ selectedBarber, successfullyEdit, setSuccessfullyEdit }) => {
+  const [newBarber, setNewBarber] = React.useState({
+    name: "",
+    last_name: "",
+    description: "",
+    full_description: "",
+    phone: "",
+    image: null,
+  })
+  const [imagePreview, setImagePreview] = React.useState(null);
+  const [errors, setErrors] = React.useState({ name: "", last_name: "", description: "", full_description: "", phone: "", image: "" });
   const [formError, setFormError] = React.useState("")
 
-  const validateFields = (property) => {
-    if (selectedBarber[property] === "") {
-      return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
+  React.useEffect(() => {
+    setNewBarber({
+      name: selectedBarber.name || "",
+      last_name: selectedBarber.last_name || "",
+      description: selectedBarber.description || "",
+      full_description: selectedBarber.full_description || "",
+      phone: selectedBarber.phone || "",
+      image: null,
+    });
+    setImagePreview(selectedBarber.image ? selectedBarber.image.url : null);
+  }, [selectedBarber])
+
+  const handleBarber = (property, event) => {
+    setNewBarber((prevBarber) => ({
+      ...prevBarber,
+      [property]: event.target.value
+    }));
+  };
+
+  const handleImage = (property, event) => {
+    if (!event.target.files[0]) return setImagePreview(selectedBarber.image ? selectedBarber.image.url : null)
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewBarber((prevBarber) => ({
+          ...prevBarber,
+          [property]: selectedFile,
+        }));
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const validateFields = async (property) => {
+    const { phone, description, full_description } = newBarber;
+
+    if (!selectedBarber[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
+    }
+
+    if (property === "phone" && phone && !isPhoneValid(phone)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.phone }));
+      throw errorMessages.phone;
+    }
+
+    if (property === "description" && description.length > 50) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.description }));
+      throw errorMessages.description;
+    }
+
+    if (property === "full_description" && full_description.length < 100) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.full_description }));
+      throw errorMessages.full_description;
     }
     setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
+  };
+
+  const isPhoneValid = (phone) => {
+    return /^[0-9]{9}$/.test(phone)
   };
 
   const saveChanges = async (name, last_name, description, full_description, phone) => {
@@ -37,17 +104,19 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    validateFields("name")
-    validateFields("last_name")
-    validateFields("description")
-    validateFields("full_description")
 
-    if (!!errors.name || !!errors.last_name || !!errors.description || !!errors.full_description) return console.log("invalid")
-
-    console.log(selectedBarber.name, selectedBarber.last_name, selectedBarber.description, selectedBarber.full_description, selectedBarber.phone)
-    saveChanges(selectedBarber.name, selectedBarber.last_name, selectedBarber.description, selectedBarber.full_description, selectedBarber.phone)
+    await Promise.all([
+      validateFields("name"),
+      validateFields("last_name"),
+      validateFields("description"),
+      validateFields("full_description"),
+      validateFields("phone"),
+      validateFields("image"),
+    ])
+      .then(() => saveChanges(newBarber.name, newBarber.last_name, newBarber.description, newBarber.full_description, newBarber.phone, newBarber.image))
+      .catch((err) => { });
   };
 
   const deleteBarber = async () => {
@@ -63,7 +132,6 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
         }
       })
       if (response.status === 204) {
-
         return setSuccessfullyEdit(!successfullyEdit)
       }
       setFormError('Error al eliminar el barbero')
@@ -76,8 +144,9 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
     <>
       <form onSubmit={handleSubmit}>
         <Box className="cp-form-image-container">
-          <img src={selectedBarber.image.url} width={200} height={250} alt={`Foto de ${selectedBarber.name} ${selectedBarber.last_name}`} />
-          <input type='file' name='barber_image_url' />
+          {imagePreview && <img src={imagePreview} width={200} height={250} alt={`Foto de ${newBarber.name} ${newBarber.last_name}`} />}
+          <input type='file' name='barber_image_url' className='file-input' accept='image/jpeg, image/png' onChange={(event) => { handleImage("image", event) }} />
+          <span>{errors.image}</span>
         </Box>
         <Box className="cp-form-inputs-container">
           {formError !== "" && <Alert variant="filled" severity="error">
@@ -85,7 +154,7 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
           </Alert>}
           <TextField
             onChange={(event) => { handleBarber("name", event); setFormError(""); }}
-            onBlur={() => validateFields("name")}
+            onBlur={() => validateFields("name").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -95,11 +164,11 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
             type='text'
             helperText={errors.name}
             error={!!errors.name}
-            value={selectedBarber.name || ''}
+            value={newBarber.name || ''}
           />
           <TextField
             onChange={(event) => { handleBarber("last_name", event); setFormError(""); }}
-            onBlur={() => validateFields("last_name")}
+            onBlur={() => validateFields("last_name").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -109,11 +178,11 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
             type='text'
             helperText={errors.last_name}
             error={!!errors.last_name}
-            value={selectedBarber.last_name || ''}
+            value={newBarber.last_name || ''}
           />
           <TextField
             onChange={(event) => { handleBarber("description", event); setFormError(""); }}
-            onBlur={() => validateFields("description")}
+            onBlur={() => validateFields("description").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -123,11 +192,11 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
             type='text'
             helperText={errors.description}
             error={!!errors.description}
-            value={selectedBarber.description || ''}
+            value={newBarber.description || ''}
           />
           <TextField
             onChange={(event) => { handleBarber("full_description", event); setFormError(""); }}
-            onBlur={() => validateFields("full_description")}
+            onBlur={() => validateFields("full_description").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -135,21 +204,25 @@ const EditBarberForm = ({ selectedBarber, handleBarber, successfullyEdit, setSuc
             label="Descripcion completa*"
             name="full_description"
             type='text'
+            multiline
+            rows={4}
             helperText={errors.full_description}
             error={!!errors.full_description}
-            value={selectedBarber.full_description || ''}
+            value={newBarber.full_description || ''}
           />
           <TextField
             onChange={(event) => { handleBarber("phone", event); setFormError(""); }}
-            onBlur={() => validateFields("phone")}
+            onBlur={() => validateFields("phone").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
             id="phone"
             label="Celular"
             name="phone"
-            type='text'
-            value={selectedBarber.phone || ''}
+            type='tel'
+            helperText={errors.phone}
+            error={!!errors.phone}
+            value={newBarber.phone || ''}
           />
           <Button
             className='btn-save-changes'

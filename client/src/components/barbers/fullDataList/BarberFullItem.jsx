@@ -1,39 +1,17 @@
 import React from 'react'
-import { Box, IconButton, Typography, Modal } from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import './barberItem.css';
+import './barberFullItem.css';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StarRateIcon from '@mui/icons-material/StarRate';
-import CloseIcon from '@mui/icons-material/Close';
-import CardReview from '../../cardReview/CardReview';
+import CardReview from '../../reviews/cardReview/CardReview';
+import InstaFeed from '../instaFeed/InstaFeed';
 
 
-const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) => {
-  const [selectedMedia, setSelectedMedia] = React.useState(null);
-  const openMediaModal = (mediaUrl) => {
-    setSelectedMedia(mediaUrl);
-  };
-
-  const closeMediaModal = () => {
-    setSelectedMedia(null);
-  };
-
-  console.log(barber)
-
-  const getMediaType = (url) => {
-    const fileExtension = url?.split('.').pop().toLowerCase();
-    if (['jpg', 'jpeg', 'png'].includes(fileExtension)) {
-      return 'image';
-    } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
-      return 'video';
-    } else {
-      return 'unknown'; // Tipo de medio desconocido
-    }
-  };
-
+const BarberFullItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) => {
   const settings = {
     className: "center",
     centerMode: true,
@@ -99,7 +77,7 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
       {expanded && (
         <Box className="barber-expanded">
           <Box className="barber-data-section">
-            <Box sx={{display: 'flex', alignItems: 'baseline'}}>
+            <Box sx={{ display: 'flex', alignItems: 'baseline' }}>
               <Typography variant='h4' mr={4} color="text.secondary">{barber.name} {barber.last_name}</Typography>
               {barber.average_rating && <Typography variant="h5" color="text.secondary"><StarRateIcon sx={{ color: 'var(--primary-color)' }} /> {parseFloat(barber.average_rating).toFixed(1)}</Typography>}
             </Box>
@@ -118,66 +96,10 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
           </Box>
           <Box className="barber-gallery">
             <Typography gutterBottom variant="h5" color="text.secondary">Algunos cortes realizados:</Typography>
-            {barber?.hc_by_barber[0] !== null && barber?.hc_by_barber?.map((mediaUrl, index) => {
-              const mediaType = getMediaType(mediaUrl);
-
-              return (
-                <div
-                  key={index}
-                  className="media-item"
-                >
-                  {mediaType === 'image' ? (
-                    <img
-                      src={mediaUrl}
-                      style={{ width: '100%' }}
-                      alt={`Imagen ${index + 1}`}
-                      onClick={() => openMediaModal(mediaUrl)}
-                    />
-                  ) : mediaType === 'video' ? (
-                    <video
-                      controls
-                      src={mediaUrl}
-                      style={{ width: '100%' }}
-                      alt={`Video ${index + 1}`}
-                    />
-                  ) : null}
-                </div>
-              );
-            })}
-            {barber?.hc_by_barber[0] === null && <Typography>No hay cortes publicados</Typography>}
+            <InstaFeed />
           </Box>
         </Box>
       )}
-      <Modal
-        open={selectedMedia !== null}
-        onClose={closeMediaModal}
-        aria-labelledby="image-modal-title"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            boxShadow: 24,
-            maxWidth: '90vw',
-            maxHeight: '90vh',
-          }}
-        >
-          <IconButton
-            aria-label="Cerrar"
-            onClick={closeMediaModal}
-            sx={{ position: 'absolute', top: 0, right: 0, color: 'white' }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <img
-            src={selectedMedia}
-            alt="Imagen seleccionada"
-            style={{ minWidth: '400px', minHeight: '500px', maxWidth: '100%', maxHeight: '100%' }}
-          />
-        </Box>
-      </Modal>
       <Box className={`expand-button ${expanded && 'active'}`}>
         <IconButton onClick={toggleExpanded}>
           {expanded ? <ExpandLessIcon sx={{ color: 'white' }} /> : <ExpandMoreIcon />}
@@ -187,4 +109,4 @@ const BarberItem = ({ barber, expanded, oneSelected, toggleExpanded, reviews }) 
   )
 }
 
-export default BarberItem
+export default BarberFullItem

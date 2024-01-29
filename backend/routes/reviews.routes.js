@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { getAllReviews, createReview, updateReview, getReviewsByBarber, getMyReview } from "../controllers/review.controller.js";
+import { createReview, updateReview, getReviewsByBarber, getMyReview, getFilteredReviews } from "../controllers/review.controller.js";
 import authorization from "../middleware/authorization.js";
 
 const router = Router();
 
-router.get('/reviews', getAllReviews)
-
 router.get('/reviews-by-barber', getReviewsByBarber)
 
 router.get('/my-review', authorization, getMyReview)
+
+router.get('/reviews-by-params', getFilteredReviews)
 
 router.post('/create-review', authorization, createReview)
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import BarbersCarousel from '../../components/barbers/carousel/BarbersCarousel ';
+import BarbersFull from '../../components/barbers/fullDataList/BarbersFull';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
@@ -31,7 +31,7 @@ const OurTeam = () => {
   }
   return (
     <>
-      <BarbersCarousel barbers={barbers} />
+      <BarbersFull barbers={barbers} />
     </>
   )
 }

@@ -5,7 +5,7 @@ import './userData.css'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const UserData = ({ checkAuth, isBookingRoute }) => {
+const UserData = ({ isBookingRoute }) => {
   const navigate = useNavigate()
   const dateRef = React.useRef("");
 
@@ -13,7 +13,7 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
   const [booking, setBooking] = React.useState(null);
   const [editMode, setEditMode] = React.useState(false);
   const [account, setAccount] = React.useState({ name: "", last_name: "", phone: "", email: "" });
-  const [errors, setErrors] = React.useState({ name: "", last_name: "", email: "" });
+  const [errors, setErrors] = React.useState({ name: "", last_name: "", phone: "", email: "" });
   const [formError, setFormError] = React.useState("")
 
   const logOut = () => {
@@ -42,17 +42,37 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
     setFormError("")
   }
 
-  const validateFields = (property) => {
-    if (account[property] === "") {
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
-    } else {
-      if (property === "email" && !isEmailValid(account.email)) return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Formato de email invalido" }));
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
+  const validateFields = async (property) => {
+    const { email, phone } = account;
+    const errorMessages = {
+      email: "Formato de email invalido",
+      phone: "Formato de número celular invalido",
+      default: "Este campo es requerido",
+    };
+
+    if (property !== "phone" && !account[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
     }
+
+    if (property === "email" && email && !isEmailValid(email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.email }));
+      throw errorMessages.email;
+    }
+
+    if (property === "phone" && phone && !isPhoneValid(phone)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.phone }));
+      throw errorMessages.phone;
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
 
   const isEmailValid = (email) => {
     return /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  };
+
+  const isPhoneValid = (phone) => {
+    return /^[0-9]{9}$/.test(phone)
   };
 
   const saveChanges = async (name, last_name, phone, email) => {
@@ -81,15 +101,16 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    validateFields("name")
-    validateFields("last_name")
-    validateFields("email")
 
-    if (!!errors.email || !!errors.name || !!errors.last_name) return console.log("invalid")
-
-    saveChanges(account.name, account.last_name, account.phone, account.email)
+    await Promise.all([
+      validateFields("name"),
+      validateFields("last_name"),
+      validateFields("email"),
+    ])
+      .then(() => saveChanges(account.name, account.last_name, account.phone, account.email))
+      .catch((err) => console.log(err));
   };
 
   const getUserData = async () => {
@@ -107,9 +128,9 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
 
       setUser(dataResponse)
     } catch (error) {
-      console.log(error)
+      console.error('Error al obtener datos del usuario:', error);
     }
-  }
+  };
 
   React.useEffect(() => {
     getUserData()
@@ -173,7 +194,7 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
               </Alert>}
               <TextField
                 onChange={(event) => handleAccount("name", event)}
-                onBlur={() => validateFields("name")}
+                onBlur={() => validateFields("name").catch(()=>{})}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -188,7 +209,7 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
               />
               <TextField
                 onChange={(event) => handleAccount("last_name", event)}
-                onBlur={() => validateFields("last_name")}
+                onBlur={() => validateFields("last_name").catch(()=>{})}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -203,7 +224,7 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
               />
               <TextField
                 onChange={(event) => handleAccount("phone", event)}
-                onBlur={() => validateFields("phone")}
+                onBlur={() => validateFields("phone").catch(()=>{})}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -211,12 +232,14 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
                 label="Celular"
                 name="phone"
                 type='tel'
+                helperText={errors.phone}
+                error={!!errors.phone}
                 autoComplete='tel-national'
                 defaultValue={user.phone}
               />
               <TextField
                 onChange={(event) => handleAccount("email", event)}
-                onBlur={() => validateFields("email")}
+                onBlur={() => validateFields("email").catch(()=>{})}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -244,7 +267,7 @@ const UserData = ({ checkAuth, isBookingRoute }) => {
       </Box>
       {isBookingRoute && booking && <Box className={'card-booking'}>
         <Box className={'container-booking'}>
-          <Typography variant='h5' color={'black'} textAlign={'center'}>Reserva guardada para completar</Typography>
+          <Typography variant='h5' component='h3' color={'black'} textAlign={'center'}>Reserva guardada para completar</Typography>
           <Box className={'container-booking-text'}>
             <Box className={'left-booking-text'}>
               <Typography className={'continue-booking-left'}>Barbero:</Typography>

@@ -11,10 +11,10 @@ const InfoCard = ({ url, title, text }) => {
         alt={`foto de ${title}`}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
+        <Typography gutterBottom variant="h5" component="h3">
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" component="p" color="text.secondary">
           {text}
         </Typography>
       </CardContent>

@@ -27,29 +27,32 @@ const ContactForm = () => {
     setFormError("");
   }
 
-  const validateFields = (property) => {
-    if (formData[property] === "") {
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
-    } else {
-      if (property === "email" && !isEmailValid(formData.email)) return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Formato de email invalido" }));
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
+  const validateFields = async (property) => {
+    const { email } = formData;
+    const errorMessages = {
+      email: "Formato de email invalido",
+      default: "Este campo es requerido",
+    };
+
+    if (!formData[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
     }
+
+    if (property === "email" && email && !isEmailValid(email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.email }));
+      throw errorMessages.email;
+    }
+
+    setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
 
   const isEmailValid = (email) => {
-    return /^\w+([.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+    return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    validateFields("name")
-    validateFields("email")
-    validateFields("message")
-
-    if (!!errors.email || !!errors.password) return console.log("invalid")
-
+  const sendContactMessage = async () => {
     try {
-      // Realiza una solicitud POST al backend para enviar el formulario
       const response = await fetch(`${baseUrl}/contact`, {
         method: 'POST',
         headers: {
@@ -67,12 +70,23 @@ const ContactForm = () => {
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
     }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await Promise.all([
+      validateFields("name"),
+      validateFields("email"),
+      validateFields("message"),
+    ])
+      .then(() => sendContactMessage())
+      .catch((err) => { });
   };
   return (
     <Box className={'flip-card'}>
       <Box className={`flip-card-inner ${reverse ? 'rotate' : ''}`}>
         <Box className={'flip-card-front'}>
-          <form className={'form-contact'} style={{ 'text-align': 'end' }} onSubmit={handleSubmit}>
+          <form className={'form-contact'} style={{ 'textAlign': 'end' }} onSubmit={handleSubmit}>
             {formError !== "" && <Alert variant="filled" severity="error">
               {formError}
             </Alert>}
@@ -83,7 +97,7 @@ const ContactForm = () => {
             </Typography>
             <TextField
               onChange={(event) => handleData("name", event)}
-              onBlur={() => validateFields("name")}
+              onBlur={() => validateFields("name").catch(()=>{})}
               variant="outlined"
               margin="normal"
               fullWidth
@@ -98,7 +112,7 @@ const ContactForm = () => {
             />
             <TextField
               onChange={(event) => handleData("email", event)}
-              onBlur={() => validateFields("email")}
+              onBlur={() => validateFields("email").catch(()=>{})}
               variant="outlined"
               margin="normal"
               fullWidth
@@ -113,7 +127,7 @@ const ContactForm = () => {
             />
             <TextField
               onChange={(event) => handleData("message", event)}
-              onBlur={() => validateFields("message")}
+              onBlur={() => validateFields("message").catch(()=>{})}
               id="outlined-multiline-flexible"
               label="Mensaje*"
               name="message"

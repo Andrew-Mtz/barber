@@ -1,12 +1,14 @@
 import React from 'react'
 import { registerStyles } from "./register.style.js"
 import { Alert, Button, Checkbox, FormControlLabel, FormGroup, TextField } from '@mui/material'
+import { useAuth } from '../../context/ValidationContext.jsx'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const Register = ({ checkAuth }) => {
-  const [account, setAccount] = React.useState({ name: "", last_name: "", phone: "", email: "", password: "", acceptNotifications: false, remember: false });
-  const [errors, setErrors] = React.useState({ name: "", last_name: "", email: "", password: "" });
+const Register = () => {
+  const { checkAuth } = useAuth();
+  const [account, setAccount] = React.useState({ name: "", last_name: "", phone: "", email: "", password: "", acceptNotifications: false, rememberMe: false });
+  const [errors, setErrors] = React.useState({ name: "", last_name: "", phone: "", email: "", password: "" });
   const [formError, setFormError] = React.useState("")
 
   const handleAccount = (property, event) => {
@@ -21,20 +23,41 @@ const Register = ({ checkAuth }) => {
   };
 
   const handleRemember = (event) => {
-    setAccount({ ...account, remember: event.target.checked });
+    setAccount({ ...account, rememberMe: event.target.checked });
   };
 
-  const validateFields = (property) => {
-    if (account[property] === "") {
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
-    } else {
-      if (property === "email" && !isEmailValid(account.email)) return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Formato de email invalido" }));
-      setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
+  const validateFields = async (property) => {
+    const { email, phone } = account;
+    const errorMessages = {
+      email: "Formato de email invalido",
+      phone: "Formato de número celular invalido",
+      default: "Este campo es requerido",
+    };
+
+    if (property !== "phone" && !account[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
     }
+
+    if (property === "email" && email && !isEmailValid(email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.email }));
+      throw errorMessages.email;
+    }
+
+    if (property === "phone" && phone && !isPhoneValid(phone)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.phone }));
+      throw errorMessages.phone;
+    }
+
+    setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
 
   const isEmailValid = (email) => {
     return /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  };
+
+  const isPhoneValid = (phone) => {
+    return /^[0-9]{9}$/.test(phone)
   };
 
   const registerUser = async (name, last_name, phone, email, password, acceptNotifications, rememberMe) => {
@@ -62,16 +85,17 @@ const Register = ({ checkAuth }) => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    validateFields("name")
-    validateFields("last_name")
-    validateFields("email")
-    validateFields("password")
-
-    if (!!errors.email || !!errors.password || !!errors.name || !!errors.last_name) return console.log("invalid")
-
-    registerUser(account.name, account.last_name, account.phone, account.email, account.password, account.acceptNotifications, account.remember)
+    await Promise.all([
+      validateFields("name"),
+      validateFields("last_name"),
+      validateFields("phone"),
+      validateFields("email"),
+      validateFields("password"),
+    ])
+      .then(() => registerUser(account.name, account.last_name, account.phone, account.email, account.password, account.acceptNotifications, account.remember))
+      .catch((err) => {});
   };
   return (
     <form style={registerStyles.form} onSubmit={handleSubmit}>
@@ -80,7 +104,7 @@ const Register = ({ checkAuth }) => {
       </Alert>}
       <TextField
         onChange={(event) => handleAccount("name", event)}
-        onBlur={() => validateFields("name")}
+        onBlur={() => validateFields("name").catch(()=>{})}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -94,7 +118,7 @@ const Register = ({ checkAuth }) => {
       />
       <TextField
         onChange={(event) => handleAccount("last_name", event)}
-        onBlur={() => validateFields("last_name")}
+        onBlur={() => validateFields("last_name").catch(()=>{})}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -108,7 +132,7 @@ const Register = ({ checkAuth }) => {
       />
       <TextField
         onChange={(event) => handleAccount("phone", event)}
-        onBlur={() => validateFields("phone")}
+        onBlur={() => validateFields("phone").catch(()=>{})}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -116,11 +140,13 @@ const Register = ({ checkAuth }) => {
         label="Phone"
         name="phone"
         type='tel'
+        helperText={errors.phone}
+        error={!!errors.phone}
         autoComplete='tel-national'
       />
       <TextField
         onChange={(event) => handleAccount("email", event)}
-        onBlur={() => validateFields("email")}
+        onBlur={() => validateFields("email").catch(()=>{})}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -134,7 +160,7 @@ const Register = ({ checkAuth }) => {
       />
       <TextField
         onChange={(event) => handleAccount("password", event)}
-        onBlur={() => validateFields("password")}
+        onBlur={() => validateFields("password").catch(()=>{})}
         variant="outlined"
         margin="normal"
         fullWidth
@@ -161,9 +187,8 @@ const Register = ({ checkAuth }) => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={account.remember}
+              checked={account.rememberMe}
               onChange={handleRemember}
-              value="remember"
               color="primary" />
           }
           label="Recuerdame"

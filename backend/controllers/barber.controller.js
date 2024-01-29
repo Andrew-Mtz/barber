@@ -13,10 +13,8 @@ const getAllBarbers = async (req, res) => {
     b.phone,
     b.image,
     b.full_description,
-    ARRAY_AGG(DISTINCT  bhm.image) AS hc_by_barber,
     AVG(r.rating) AS average_rating
   FROM barbers AS b
-  LEFT JOIN barber_haircuts_made AS bhm ON b.id = bhm.barber_id
   LEFT JOIN reviews AS r ON b.id = r.barber_id
   GROUP BY
     b.id,
@@ -28,6 +26,9 @@ const getAllBarbers = async (req, res) => {
     b.full_description;
     `;
     const result = await pool.query(query);
+    if (result.rowCount === 0) {
+      return res.status(404).json([]);
+    }
     res.json(result.rows);
   } catch (error) {
     console.error(error);
@@ -60,7 +61,7 @@ const createBarber = async (req, res) => {
         public_id: result.public_id
       }
     } else {
-      res.status(404).json({ message: 'Ha ocurrido un problema al guardar la foto' });
+      return res.status(404).json({ message: 'Ha ocurrido un problema al guardar la foto' });
     }
 
     const query = `
@@ -72,7 +73,7 @@ const createBarber = async (req, res) => {
     const result = await pool.query(query, values);
     const barberId = result.rows[0].id;
 
-    res.status(201).json({ message: 'Barbero creado correctamente.', barberId });
+    return res.status(201).json({ message: 'Barbero creado correctamente.', barberId });
   } catch (error) {
     if (error.code === '23505' && error.constraint === 'unique_barber_schedule_date') {
       res.status(409).json({ error: 'La reserva para esta fecha y horario ya existe.' });

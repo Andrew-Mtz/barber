@@ -1,15 +1,59 @@
 import React from 'react'
 import { Alert, Box, Button, TextField } from '@mui/material';
+import { errorMessages } from './errors';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, setSuccessfullyEdit }) => {
-  const [errors, setErrors] = React.useState({ name: "", price: "", description: "" });
+const EditHaircutForm = ({ selectedHaircut, successfullyEdit, setSuccessfullyEdit }) => {
+  const [newHaircut, setNewHaircut] = React.useState({
+    name: "",
+    price: "",
+    description: "",
+    image: null
+  })
+  const [imagePreview, setImagePreview] = React.useState(null);
+  const [errors, setErrors] = React.useState({ name: "", price: "", description: "", image: "" });
   const [formError, setFormError] = React.useState("")
 
-  const validateFields = (property) => {
-    if (selectedHaircut[property] === "") {
-      return setErrors((prevErrors) => ({ ...prevErrors, [property]: "Este campo es requerido" }));
+  React.useEffect(() => {
+    setNewHaircut({
+      name: selectedHaircut.name || "",
+      last_name: selectedHaircut.last_name || "",
+      description: selectedHaircut.description || "",
+      full_description: selectedHaircut.full_description || "",
+      phone: selectedHaircut.phone || "",
+      image: null,
+    });
+    setImagePreview(selectedHaircut.image ? selectedHaircut.image.url : null);
+  }, [selectedHaircut])
+
+  const handleHaircut = (property, event) => {
+    setNewHaircut((prevHaircut) => ({
+      ...prevHaircut,
+      [property]: event.target.value
+    }));
+  };
+
+  const handleImage = (property, event) => {
+    if (!event.target.files[0]) return setImagePreview(selectedHaircut.image ? selectedHaircut.image.url : null)
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewHaircut((prevBarber) => ({
+          ...prevBarber,
+          [property]: selectedFile,
+        }));
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const validateFields = async (property) => {
+    if (!selectedHaircut[property]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
+      throw errorMessages.default;
     }
     setErrors((prevErrors) => ({ ...prevErrors, [property]: "" }));
   };
@@ -37,16 +81,16 @@ const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, set
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    validateFields("name")
-    validateFields("price")
-    validateFields("description")
-
-    if (!!errors.name || !!errors.price || !!errors.description) return console.log("invalid")
-
-    console.log(selectedHaircut.name, selectedHaircut.price, selectedHaircut.description)
-    saveChanges(selectedHaircut.name, selectedHaircut.price, selectedHaircut.description)
+    await Promise.all([
+      validateFields("name"),
+      validateFields("price"),
+      validateFields("description"),
+      validateFields("image"),
+    ])
+      .then(() => saveChanges(newHaircut.name, newHaircut.price, newHaircut.description))
+      .catch((err) => { });
   };
 
   const deleteHaircut = async () => {
@@ -74,8 +118,9 @@ const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, set
     <>
       <form onSubmit={handleSubmit}>
         <Box className="cp-form-image-container">
-          <img src={selectedHaircut.image.url} alt={selectedHaircut.name} width={200} height={250} />
-          <input type='file' name='haircut_image_url' />
+          {imagePreview && <img src={imagePreview} width={200} height={250} alt={`Foto ${newHaircut.name}`} />}
+          <input type='file' name='haircut_image_url' className='file-input' accept='image/jpeg, image/png' onChange={(event) => { handleImage("image", event) }} />
+          <span>{errors.image}</span>
         </Box>
         <Box className="cp-form-inputs-container">
           {formError !== "" && <Alert variant="filled" severity="error">
@@ -83,7 +128,7 @@ const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, set
           </Alert>}
           <TextField
             onChange={(event) => { handleHaircut("name", event); setFormError(""); }}
-            onBlur={() => validateFields("name")}
+            onBlur={() => validateFields("name").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -93,11 +138,11 @@ const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, set
             type='text'
             helperText={errors.name}
             error={!!errors.name}
-            value={selectedHaircut.name || ''}
+            value={newHaircut.name || ''}
           />
           <TextField
             onChange={(event) => { handleHaircut("price", event); setFormError(""); }}
-            onBlur={() => validateFields("price")}
+            onBlur={() => validateFields("price").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -107,11 +152,11 @@ const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, set
             type='text'
             helperText={errors.price}
             error={!!errors.price}
-            value={selectedHaircut.price || ''}
+            value={newHaircut.price || ''}
           />
           <TextField
             onChange={(event) => { handleHaircut("description", event); setFormError(""); }}
-            onBlur={() => validateFields("description")}
+            onBlur={() => validateFields("description").catch(() => { })}
             variant="outlined"
             margin="normal"
             fullWidth
@@ -121,7 +166,7 @@ const EditHaircutForm = ({ selectedHaircut, handleHaircut, successfullyEdit, set
             type='text'
             helperText={errors.description}
             error={!!errors.description}
-            value={selectedHaircut.description || ''}
+            value={newHaircut.description || ''}
           />
           <Box className='cp-form-btns-container'>
             <Button

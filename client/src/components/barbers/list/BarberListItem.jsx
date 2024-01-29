@@ -2,9 +2,9 @@ import React from 'react'
 import { Box, Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-const Barber = ({ onSelect, url, name, lastName, description, id, selected }) => {
+const BarberListItem = ({ onSelect, url, name, lastName, description, id, selected }) => {
   return (
-    <Card sx={{ maxWidth: 260, borderRadius: '10px' }} onClick={() => onSelect(id, name, lastName)}>
+    <Card sx={{ maxWidth: 260, minWidth: 260, borderRadius: '10px' }} onClick={() => onSelect(id, name, lastName)}>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -28,4 +28,4 @@ const Barber = ({ onSelect, url, name, lastName, description, id, selected }) =>
   )
 }
 
-export default Barber
+export default BarberListItem
