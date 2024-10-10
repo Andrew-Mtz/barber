@@ -13,24 +13,13 @@ services:
       - "5000:5000"
     depends_on:
       - db
-    environment:
-      - NODE_ENV=production
-      - DB_USER=postgres
-      - DB_PASSWORD=root1234
-      - DB_PORT=5433
-      - DB_HOST=db
-      - DB_DATABASE=barberdb
-      - FRONTEND_URL=http://localhost:3000
-      - CLOUD_NAME=dmusin0l0
-      - API_KEY=248116635722344
-      - API_SECRET=S9FydhonFZu4hgimuElVNLz8WOA
+    env_file:
+      - .env
 
   db:
     image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root1234
-      POSTGRES_DB: barberdb
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
