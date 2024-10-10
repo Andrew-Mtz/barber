@@ -1,11 +1,11 @@
-# Usamos una imagen base de Node.js 18-alpine
+# Dockerfile del frontend
 FROM node:18-alpine AS build
-
 WORKDIR /app
-
 COPY package*.json ./
-
 RUN npm install
+
+# Incrementa el límite de memoria para el proceso de build
+RUN node --max-old-space-size=1024 node_modules/.bin/react-scripts build
 
 COPY . .
 
