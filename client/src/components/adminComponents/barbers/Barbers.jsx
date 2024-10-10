@@ -26,12 +26,11 @@ const Barbers = () => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 200) {
-        const data = await response.json();
-        setBarbers(data);
-        return
+      const data = await response.json();
+      if (data.error !== '') {
+        return console.log(data.error)
       }
-      return //setBarbers(response.statusText)
+      setBarbers(data.response);
     } catch (error) {
       console.error('Error al obtener los barberos:', error);
     }

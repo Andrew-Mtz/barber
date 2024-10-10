@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllBookings, getBooking, getLastsBooking, createBooking, updateBooking, canceleBooking } from "../controllers/booking.controller.js";
+import { getAllBookings, getBooking, getLastsBooking, getBookingsByBarberAndDay, createBooking, updateBooking, canceleBooking } from "../controllers/booking.controller.js";
 import authorization from "../middleware/authorization.js";
 
 const router = Router();
@@ -9,6 +9,8 @@ router.get('/booking', getAllBookings)
 router.get('/my-booking', authorization, getBooking)
 
 router.get('/my-lasts-booking', authorization, getLastsBooking)
+
+router.get('/bookings', authorization, getBookingsByBarberAndDay)
 
 router.post('/booking', authorization, createBooking)
 

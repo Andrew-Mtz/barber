@@ -6,7 +6,7 @@ const InfoCard = ({ url, title, text }) => {
     <Card sx={{ maxWidth: 345, height: 360, opacity: 1 }}>
       <CardMedia
         component="img"
-        height="140"
+        height="150"
         image={url}
         alt={`foto de ${title}`}
       />

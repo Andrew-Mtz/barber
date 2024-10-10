@@ -1,23 +1,28 @@
-CREATE DATABASE barberdb;
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('cliente', 'barbero', 'admin')),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE clientes (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  phone VARCHAR(20) UNIQUE,
+  accept_notifications BOOLEAN,
+  image JSONB NOT NULL
+);
 CREATE TABLE barbers (
   id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   name VARCHAR(100) NOT NULL,
   last_name VARCHAR(100) NOT NULL,
   description TEXT CHECK (LENGTH(description) <= 50) NOT NULL,
   full_description TEXT CHECK (LENGTH(full_description) >= 100) NOT NULL,
-  phone VARCHAR(20) NOT NULL UNIQUE,
+  phone VARCHAR(20) UNIQUE NOT NULL,
   image JSONB NOT NULL
-);
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  last_name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) NOT NULL UNIQUE,
-  phone VARCHAR(20) UNIQUE,
-  password VARCHAR(255) NOT NULL,
-  user_type VARCHAR(20) NOT NULL,
-  profile_image_url VARCHAR(255),
-  accept_notifications BOOLEAN
 );
 CREATE TABLE haircuts (
   id SERIAL PRIMARY KEY,
@@ -57,50 +62,116 @@ CREATE TABLE booking (
 );
 CREATE TABLE reviews (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  client_id INTEGER REFERENCES clientes(id) ON DELETE CASCADE,
   barber_id INTEGER REFERENCES barbers(id) ON DELETE CASCADE,
   booking_id INTEGER REFERENCES booking(id) ON DELETE CASCADE,
   haircuts_id INTEGER REFERENCES haircuts(id) ON DELETE CASCADE,
   comment TEXT,
   rating INTEGER,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  is_pending BOOLEAN DEFAULT true,
-  user_name VARCHAR(100),
-  user_last_name VARCHAR(100)
+  is_pending BOOLEAN DEFAULT true
 );
 INSERT INTO barbers (
     name,
     last_name,
-    age,
-    birthdate,
     description,
+	full_description,
     phone,
-    barber_image_data
+    image
   )
 VALUES (
     'Maximiliano',
     'Sierra',
-    24,
-    '1999-05-23',
     'Me encanta jugar al futbol y rascarme las bolas',
+	'Me encanta jugar al futbol y cortar pelo y estar siempre al dia con los nuevos cortes que van surgiendo, ademas aprender las mejores tecnicas que hay para ofrecer lo mejor a cada cliente',
     '092994277',
-    'http://localhost:3001/uploads/barbers/maxi.jpg'
+	'{
+        "url": "http://localhost:3001/uploads/barbers/maxi.jpg",
+        "width": 400,
+        "height": 400,
+        "size_in_kb": 120,
+        "file_type": "jpeg",
+        "uploaded_at": "2024-10-06T12:34:56"
+    }'::jsonb
   );
-INSERT INTO haircuts (name, price, description)
+  INSERT INTO barbers (
+    name,
+    last_name,
+    description,
+	full_description,
+    phone,
+    image
+  )
+VALUES (
+    'Genaro',
+    'Algo',
+    'Me encanta jugar al futbol y rascarme las bolas',
+	'Me encanta jugar al futbol y cortar pelo y estar siempre al dia con los nuevos cortes que van surgiendo, ademas aprender las mejores tecnicas que hay para ofrecer lo mejor a cada cliente',
+    '092994278',
+	'{
+        "url": "http://localhost:3001/uploads/barbers/maxi.jpg",
+        "width": 400,
+        "height": 400,
+        "size_in_kb": 120,
+        "file_type": "jpeg",
+        "uploaded_at": "2024-10-06T12:34:56"
+    }'::jsonb
+  );
+  INSERT INTO barbers (
+    name,
+    last_name,
+    description,
+	full_description,
+    phone,
+    image
+  )
+VALUES (
+    'Aldo',
+    'Villafan',
+    'Me encanta jugar al futbol y rascarme las bolas',
+	'Me encanta jugar al futbol y cortar pelo y estar siempre al dia con los nuevos cortes que van surgiendo, ademas aprender las mejores tecnicas que hay para ofrecer lo mejor a cada cliente',
+    '092994279',
+	'{
+        "url": "http://localhost:3001/uploads/barbers/maxi.jpg",
+        "width": 400,
+        "height": 400,
+        "size_in_kb": 120,
+        "file_type": "jpeg",
+        "uploaded_at": "2024-10-06T12:34:56"
+    }'::jsonb
+  );
+INSERT INTO haircuts (name, price, description, image)
 VALUES (
     'Corte de cabello',
     300.00,
-    'Asesoramiento, corte de cabello'
+    'Asesoramiento, corte de cabello',
+	'{
+        "url": "http://localhost:3001/uploads/barbers/maxi.jpg",
+        "width": 400,
+        "height": 400,
+        "size_in_kb": 120,
+        "file_type": "jpeg",
+        "uploaded_at": "2024-10-06T12:34:56"
+    }'::jsonb
 );
-INSERT INTO haircuts (name, price, description)
+INSERT INTO haircuts (name, price, description, image)
 VALUES (
     'Mechitas',
     1000.00,
-    'Corte + mechas de color'
+    'Corte + mechas de color',
+	'{
+        "url": "http://localhost:3001/uploads/barbers/maxi.jpg",
+        "width": 400,
+        "height": 400,
+        "size_in_kb": 120,
+        "file_type": "jpeg",
+        "uploaded_at": "2024-10-06T12:34:56"
+    }'::jsonb
+	
 );
 -- Agregar el día 31 de este mes a la tabla "horarios"
 INSERT INTO schedules (date, barber_id)
-VALUES ('2023-08-13', 1);
+VALUES ('2024-10-06', 1);
 -- Agregar los horarios disponibles desde las 8:00 AM hasta las 10:00 PM con intervalo de 45 minutos
 INSERT INTO available_schedules (hour, schedule_id)
 VALUES ('11:00', 1),
@@ -132,18 +203,10 @@ VALUES (3, 1);
 -- Function to create the associated review when a booking is created
 CREATE OR REPLACE FUNCTION create_initial_review()
 RETURNS TRIGGER AS $$
-DECLARE
-    user_name_var users.name%TYPE;
-    user_last_name_var users.last_name%TYPE;
 BEGIN
-    -- Obtener el nombre y apellido del usuario
-    SELECT name, last_name INTO user_name_var, user_last_name_var
-    FROM users
-    WHERE id = NEW.user_id;
-
-    -- Insertar en la tabla reviews
-    INSERT INTO reviews (user_id, barber_id, booking_id, haircuts_id, comment, rating, created_at, is_pending, user_name, user_last_name)
-    VALUES (NEW.user_id, NEW.barber_id, NEW.id, NEW.haircut_id, null, null, null, true, user_name_var, user_last_name_var);
+    -- Insertar en la tabla reviews sin el nombre y apellido
+    INSERT INTO reviews (client_id, barber_id, booking_id, haircuts_id, comment, rating, created_at, is_pending)
+    VALUES (NEW.client_id, NEW.barber_id, NEW.id, NEW.haircut_id, null, null, NOW(), true);
 
     RETURN NEW;
 END;
@@ -171,40 +234,20 @@ AFTER DELETE ON booking
 FOR EACH ROW
 EXECUTE FUNCTION delete_associated_review();
 
-CREATE OR REPLACE FUNCTION cancel_booking_trigger()
+CREATE OR REPLACE FUNCTION update_schedule_status()
 RETURNS TRIGGER AS $$
-DECLARE
-  booking_schedule_id INT;
 BEGIN
-  -- Obtener el schedule_id del booking que se va a eliminar
-  SELECT schedule_id INTO booking_schedule_id FROM booking WHERE id = OLD.id;
+    IF TG_OP = 'INSERT' THEN
+        UPDATE available_schedules SET status = 2 WHERE id = NEW.schedule_id;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE available_schedules SET status = 1 WHERE id = OLD.schedule_id;
+    END IF;
 
-  -- Actualizar el estado del horario en available_schedules
-  UPDATE available_schedules SET status = 1 WHERE id = booking_schedule_id;
-
-  RETURN OLD;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER cancel_booking
-AFTER DELETE ON booking
+CREATE TRIGGER update_schedule_trigger
+AFTER INSERT OR DELETE ON booking
 FOR EACH ROW
-EXECUTE FUNCTION cancel_booking_trigger();
-
--- trigger to update status at schedules when booking is created
-CREATE OR REPLACE FUNCTION create_booking_trigger()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Actualizar el estado del horario en available_schedules a 2
-  UPDATE available_schedules
-  SET status = 2
-  WHERE id = NEW.schedule_id;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER create_booking
-AFTER INSERT ON booking
-FOR EACH ROW
-EXECUTE FUNCTION create_booking_trigger();
+EXECUTE FUNCTION update_schedule_status();

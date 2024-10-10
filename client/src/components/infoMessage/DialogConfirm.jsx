@@ -27,10 +27,10 @@ const DialogConfirm = ({ open, handleClose, specificFuncion, title, message }) =
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button variant='contained' onClick={handleClose}>
+        <Button color='error' variant='contained' onClick={handleClose}>
           Cerrar
         </Button>
-        <Button color='error' variant='contained' onClick={doSpecificFunction}>
+        <Button variant='contained' onClick={doSpecificFunction}>
           Confirmar
         </Button>
       </DialogActions>

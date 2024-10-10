@@ -1,10 +1,12 @@
 import React from 'react'
 import BarbersFull from '../../components/barbers/fullDataList/BarbersFull';
+import Loading from '../../components/loading/Loading';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const OurTeam = () => {
   const [barbers, setBarbers] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {
     getBarbers()
@@ -19,19 +21,20 @@ const OurTeam = () => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        setBarbers(response.statusText)
+      const data = await response.json();
+      if (data.error !== '') {
+        setBarbers(data.response)
         return
       }
-      const data = await response.json();
-      setBarbers(data);
+      setBarbers(data.response);
+      setLoading(true)
     } catch (error) {
       console.error('Error al obtener los barberos:', error);
     }
   }
   return (
     <>
-      <BarbersFull barbers={barbers} />
+      {loading ? <BarbersFull barbers={barbers} /> : <Loading />}
     </>
   )
 }

@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Paper, Typography } from '@mui/material'
 import { styles } from './infoMessage.styles.js'
 
-const SuccesfullBooking = ({ title, message }) => {
+const SuccesfullMessage = ({ title, message }) => {
   return (
     <Paper sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
       <Box sx={styles.card}>
@@ -30,4 +30,4 @@ const SuccesfullBooking = ({ title, message }) => {
   )
 }
 
-export default SuccesfullBooking
+export default SuccesfullMessage

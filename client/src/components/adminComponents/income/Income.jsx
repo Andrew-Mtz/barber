@@ -65,8 +65,10 @@ const Income = () => {
           'Authorization': `Bearer ${token}`
         }
       });
+      const data = await response.json();
+      console.log(data)
       if (response.status === 200) {
-        const data = await response.json();
+       
         console.log(data.length)
         setBarbers(data);
         return

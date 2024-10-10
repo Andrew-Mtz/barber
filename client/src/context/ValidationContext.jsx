@@ -28,10 +28,13 @@ export const ValidationContext = ({ children }) => {
         }
       });
       const dataResponse = await response.json();
-      if (dataResponse === true) return setIsLoggedIn(true)
+      console.log(dataResponse)
+      if (dataResponse === true) return setIsLoggedIn(true);
       setIsLoggedIn(false);
-      setIsAdmin(false)
-      setIsBarber(false)
+      setIsAdmin(false);
+      setIsBarber(false);
+      localStorage.removeItem("token");
+      localStorage.removeItem("userType");
     } catch (error) {
       console.log(error)
     }
@@ -41,8 +44,7 @@ export const ValidationContext = ({ children }) => {
     const token = localStorage.getItem('token');
     const userType = localStorage.getItem('userType');
     if (token) {
-      setIsLoggedIn(true);
-      checkToken();
+      await checkToken();
       if (userType === "barber") {
         setIsBarber(true)
       } else if (userType === "admin") {
@@ -52,6 +54,8 @@ export const ValidationContext = ({ children }) => {
       setIsLoggedIn(false);
       setIsAdmin(false)
       setIsBarber(false)
+      localStorage.removeItem("token")
+      localStorage.removeItem("userType")
     }
   }, []);
 

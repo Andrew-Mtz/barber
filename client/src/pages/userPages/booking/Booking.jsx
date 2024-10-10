@@ -9,9 +9,10 @@ import BarberList from '../../../components/barbers/list/BarberList.jsx';
 import HaircutList from '../../../components/haircuts/HaircutList.jsx';
 import Calendar from '../../../components/calendar/Calendar.jsx';
 import DialogConfirm from '../../../components/infoMessage/DialogConfirm.jsx';
-import SuccesfullBooking from '../../../components/infoMessage/SuccesfullBooking.jsx';
-import ErrorBooking from '../../../components/infoMessage/ErrorBooking.jsx';
+import SuccesfullMessage from '../../../components/infoMessage/SuccesfullMessage.jsx';
+import ErrorMessage from '../../../components/infoMessage/ErrorMessage.jsx';
 import { useAuth } from '../../../context/ValidationContext.jsx';
+
 
 const Booking = () => {
   const { isLoggedIn } = useAuth();
@@ -87,7 +88,9 @@ const Booking = () => {
     setBookingData((prevBookingData) => ({
       ...prevBookingData,
       date: date,
-      date_id: dateId
+      date_id: dateId,
+      schedule_id: 0,
+      hour: ""
     }));
   };
 
@@ -138,7 +141,7 @@ const Booking = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (activeStep === 2 && bookingData.schedule_id === 0 && bookingData.date_id === 0) {
+    if (activeStep === 2 && bookingData.schedule_id === 0 && bookingData.hour === "") {
       showError()
       setErrorMessage('Selecciona un horario para poder agendarte')
       return
@@ -208,8 +211,8 @@ const Booking = () => {
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
-            {succes ? <SuccesfullBooking title={"Agendado correctamente"} message={'Puedes ver los detalles de la reserva o cancelarla hasta 2 horas antes en "Mi reserva"'} />
-              : <ErrorBooking title={titleErMsgBooking} message={erMsgBooking} />}
+            {succes ? <SuccesfullMessage title={"Agendado correctamente"} message={'Puedes ver los detalles de la reserva o cancelarla hasta 2 horas antes en "Mi reserva"'} />
+              : <ErrorMessage title={titleErMsgBooking} message={erMsgBooking} />}
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Box sx={{ flex: '1 1 auto' }} />

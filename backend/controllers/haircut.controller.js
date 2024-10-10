@@ -4,10 +4,13 @@ import fs from "fs-extra"
 
 const getAllHaircuts = async (req, res) => {
   try {
-    const allBookings = await pool.query('SELECT * FROM haircuts')
-    res.json(allBookings.rows)
+    const result = await pool.query('SELECT * FROM haircuts')
+    if (result.rowCount === 0) {
+      return res.status(404).json({ response: [], error: '' });
+    }
+    res.json({ response: result.rows, error: '' });
   } catch (error) {
-    console.log(error)
+    res.status(500).json({ response: [], error: 'Error al obtener los cortes de pelo' });
   }
 }
 
@@ -16,10 +19,10 @@ const getHaircut = async (req, res) => {
     const { id } = req.params
     const result = await pool.query('SELECT * FROM haircuts WHERE id = $1', [id])
 
-    if (result.rows.length === 0) return res.status(404).json({ message: "Corte no encontrado" })
+    if (result.rows.length === 0) return res.status(404).json({ response: [], error: '' })
     res.json(result.rows[0])
   } catch (error) {
-    console.log(error)
+    res.status(500).json({ response: [], error: 'Error al obtener el corte de pelo' });
   }
 }
 
@@ -28,16 +31,16 @@ const getHaircutByBarber = async (req, res) => {
     const selectedBarberId = req.query.barber_id;
     const result = await pool.query('SELECT * FROM barber_haircuts WHERE barber_id = $1', [selectedBarberId])
 
-    if (result.rows.length === 0) return res.status(404).json({ message: "Cortes no encontrados para ese barbero" })
+    if (result.rows.length === 0) return res.status(404).json({ response: [], error: "Cortes no encontrados para el barbero seleccionado" })
     // Mapea los IDs de cortes de pelo en un array
     const haircutIds = result.rows.map(row => row.haircut_id);
 
     // Obtiene la información completa de los cortes de pelo
     const haircuts = await pool.query('SELECT * FROM haircuts WHERE id = ANY($1)', [haircutIds]);
-    res.json(haircuts.rows);
+    res.json({ response: haircuts.rows, error: '' });
   } catch (error) {
     console.error('Error al intentar obtener cortes:', error);
-    res.status(500).json({ error: 'Hubo un error al intentar obtener los cortes' });
+    res.status(500).json({ response: [], error: 'Hubo un error al intentar obtener los cortes' });
   }
 }
 
