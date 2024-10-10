@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 
 const AvailableHours = ({
-  title, schedules, onDaySelect, onHourSelect, selectedId, selectedDayId, day, disUnavailable
+  title, schedules, onHourSelect, selectedId, selectedDayId, day, disUnavailable
 }) => {
 
   const buttonStyle = {
@@ -30,11 +30,6 @@ const AvailableHours = ({
     return selectedId?.includes(id);
   };
 
-  const onScheduleSelect = (dayId, day, hourId, hour, status) => {
-    onDaySelect && onDaySelect(dayId, day)
-    onHourSelect && onHourSelect(hourId, hour, status)
-  }
-
   return (
     <Box sx={{ paddingTop: 3, flexGrow: 1 }}>
       <Typography variant='h6' component="p" textAlign={'center'}>{title}</Typography>
@@ -48,7 +43,7 @@ const AvailableHours = ({
                   disabled={disUnavailable && schedule.status !== 1}
                   variant={isSelected(schedule.id) ? "contained" : "outlined"}
                   sx={buttonStyle}
-                  onClick={() => onScheduleSelect(selectedDayId, day, schedule.id, schedule.hour, schedule.status)}
+                  onClick={() => onHourSelect(schedule.id, schedule.hour, schedule.status)}
                 >{schedule.hour}
                 </Button>
               </Box>

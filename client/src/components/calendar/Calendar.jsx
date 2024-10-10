@@ -5,8 +5,9 @@ import PropTypes from 'prop-types';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { Box, Paper } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 import AvailableHours from './AvailableHours.jsx';
+import Loading from '../loading/Loading.jsx';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
@@ -15,6 +16,9 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
   const [selectedDateData, setSelectedDateData] = React.useState({ id: 0, status: null, availableSchedules: [], unavailableSchedules: [] });
   const [unavailableDates, setUnavailableDates] = React.useState([]);
   const [programmaticChange, setProgrammaticChange] = React.useState(false);
+  const [loadingHours, setLoadingHours] = React.useState(false)
+  const [loadingCalendar, setLoadingCalendar] = React.useState(false)
+  const [error, setError] = React.useState(false)
 
   const month = dayjs().get('month') + 2;
   const year = dayjs().get('year');
@@ -33,6 +37,7 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
       });
       const data = await response.json();
       setUnavailableDates(data);
+      setLoadingCalendar(true)
     } catch (error) {
       console.error('Error al obtener el ID del día:', error);
     }
@@ -49,21 +54,22 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
+      const data = await response.json();
+      if (data.error !== '') {
         setValue(newValue);
         setSelectedDateData({ id: 0, status: null, schedules: [] });
+        setError(data.error);
         return;
       }
-      if (response.status === 200) {
-        const data = await response.json();
-        setSelectedDateData(data);
-        setValue(newValue);
-        return;
-      }
+      setSelectedDateData(data.response);
+      onDaySelect(data.response.id, data.response.date)
+      setValue(newValue);
+      setLoadingHours(true)
+      return;
     } catch (error) {
       console.error('Error al obtener el ID del día:', error);
     }
-  }, [selectedBarberId]);
+  }, [onDaySelect, selectedBarberId]);
 
   React.useEffect(() => {
     getUnavailableDates();
@@ -94,19 +100,38 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
 
   return (
     <Paper sx={paper}>
-      <Box>
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-          <DateCalendar value={value} views={['day']} onChange={handleDateChange} maxDate={dayjs(finalDate)} shouldDisableDate={shouldDisableDate} />
-        </LocalizationProvider>
-      </Box>
-      <AvailableHours
-        schedules={selectedDateData.availableSchedules}
-        onHourSelect={onHourSelect}
-        onDaySelect={onDaySelect}
-        selectedId={selectedId}
-        selectedDayId={selectedDateData.id}
-        day={value}
-        disUnavailable />
+      {error ? (
+        <Box>
+          <Typography color="error">{error}</Typography>
+        </Box>
+      ) : (
+        <>
+          {loadingCalendar && loadingHours && (
+            <Box>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+                <DateCalendar
+                  value={value}
+                  views={['day']}
+                  onChange={handleDateChange}
+                  maxDate={dayjs(finalDate)}
+                  shouldDisableDate={shouldDisableDate}
+                />
+              </LocalizationProvider>
+            </Box>
+          )}
+          {loadingHours && loadingCalendar && (
+            <AvailableHours
+              schedules={selectedDateData.availableSchedules}
+              onHourSelect={onHourSelect}
+              selectedId={selectedId}
+              selectedDayId={selectedDateData.id}
+              day={value}
+              disUnavailable
+            />
+          )}
+          {(!loadingCalendar || !loadingHours) && <Loading />}
+        </>
+      )}
     </Paper>
   );
 };
@@ -116,11 +141,6 @@ Calendar.propTypes = {
   onHourSelect: PropTypes.func.isRequired,
   selectedId: PropTypes.number.isRequired,
   selectedBarberId: PropTypes.number
-};
-
-Calendar.defaultProps = {
-  title: 'Horarios disponibles',
-  schedules: []
 };
 
 export default Calendar;

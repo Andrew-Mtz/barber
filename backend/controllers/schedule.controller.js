@@ -32,7 +32,7 @@ const scheduleByBarber = async (req, res) => {
 
     res.status(200).json({ empty: false, range: { startMonth: startMonth, endMonth: endMonth } })
   } catch (error) {
-    console.log(error)
+    res.status(500).json({ response: [], error: 'Error al obtener la disponibilida del barbero' });
   }
 }
 
@@ -116,7 +116,6 @@ const generateAvailableHours = (startDateTime, endDateTime) => {
 
 const getUnavailableDates = async (req, res) => {
   try {
-
     const selectedBarberId = req.query.barber_id;
     const year = req.query.year;
     const month = req.query.month;

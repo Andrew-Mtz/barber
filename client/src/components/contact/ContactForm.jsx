@@ -3,6 +3,7 @@ import './contactForm.css'
 import { Alert, Box, Button, IconButton, TextField, Typography } from '@mui/material';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import InstagramIcon from '@mui/icons-material/Instagram';
+import Spinner from '../spinner/Spinner';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
@@ -11,6 +12,7 @@ const ContactForm = () => {
   const [errors, setErrors] = React.useState({ email: "" });
   const [formError, setFormError] = React.useState("")
   const [reverse, setReverse] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
 
   const openInstagram = () => {
     // URL de Instagram
@@ -64,8 +66,10 @@ const ContactForm = () => {
 
       if (response.ok) {
         setFormData({ name: "", email: "", message: "" });
+        setLoading(false)
       } else {
         // Mostrar mensaje de error si la solicitud no fue exitosa
+        setLoading(false)
       }
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
@@ -73,6 +77,7 @@ const ContactForm = () => {
   }
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     await Promise.all([
       validateFields("name"),
@@ -80,7 +85,7 @@ const ContactForm = () => {
       validateFields("message"),
     ])
       .then(() => sendContactMessage())
-      .catch((err) => { });
+      .catch((err) => { setLoading(false) });
   };
   return (
     <Box className={'flip-card'}>
@@ -97,7 +102,7 @@ const ContactForm = () => {
             </Typography>
             <TextField
               onChange={(event) => handleData("name", event)}
-              onBlur={() => validateFields("name").catch(()=>{})}
+              onBlur={() => validateFields("name").catch(() => { })}
               variant="outlined"
               margin="normal"
               fullWidth
@@ -112,7 +117,7 @@ const ContactForm = () => {
             />
             <TextField
               onChange={(event) => handleData("email", event)}
-              onBlur={() => validateFields("email").catch(()=>{})}
+              onBlur={() => validateFields("email").catch(() => { })}
               variant="outlined"
               margin="normal"
               fullWidth
@@ -127,7 +132,7 @@ const ContactForm = () => {
             />
             <TextField
               onChange={(event) => handleData("message", event)}
-              onBlur={() => validateFields("message").catch(()=>{})}
+              onBlur={() => validateFields("message").catch(() => { })}
               id="outlined-multiline-flexible"
               label="Mensaje*"
               name="message"
@@ -147,6 +152,7 @@ const ContactForm = () => {
               className={'submit'}
             >
               Enviar
+              {loading && <Spinner styles={{ marginLeft: '50px' }} />}
             </Button>
           </form>
         </Box>

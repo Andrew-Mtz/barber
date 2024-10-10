@@ -125,7 +125,7 @@ const UserData = ({ isBookingRoute }) => {
         }
       });
       const dataResponse = await response.json();
-
+      console.log(dataResponse)
       setUser(dataResponse)
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
@@ -174,7 +174,7 @@ const UserData = ({ isBookingRoute }) => {
       <Box className={'card-booking'}>
         <Box className={'container-booking'}>
           <Box className={'user-avatar-image'}>
-            <Avatar {...stringAvatar(`${user?.name} ${user?.last_name}`)} sx={{ width: 56, height: 56 }} />
+            <Avatar alt="User Image" src={user?.image?.url} sx={{ width: 56, height: 56 }} />
           </Box>
           {!editMode ? <Box className={'container-booking-text'}>
             <Box className={'left-booking-text'} >
@@ -194,7 +194,7 @@ const UserData = ({ isBookingRoute }) => {
               </Alert>}
               <TextField
                 onChange={(event) => handleAccount("name", event)}
-                onBlur={() => validateFields("name").catch(()=>{})}
+                onBlur={() => validateFields("name").catch(() => { })}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -209,7 +209,7 @@ const UserData = ({ isBookingRoute }) => {
               />
               <TextField
                 onChange={(event) => handleAccount("last_name", event)}
-                onBlur={() => validateFields("last_name").catch(()=>{})}
+                onBlur={() => validateFields("last_name").catch(() => { })}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -224,7 +224,7 @@ const UserData = ({ isBookingRoute }) => {
               />
               <TextField
                 onChange={(event) => handleAccount("phone", event)}
-                onBlur={() => validateFields("phone").catch(()=>{})}
+                onBlur={() => validateFields("phone").catch(() => { })}
                 variant="outlined"
                 margin="normal"
                 fullWidth
@@ -239,7 +239,7 @@ const UserData = ({ isBookingRoute }) => {
               />
               <TextField
                 onChange={(event) => handleAccount("email", event)}
-                onBlur={() => validateFields("email").catch(()=>{})}
+                onBlur={() => validateFields("email").catch(() => { })}
                 variant="outlined"
                 margin="normal"
                 fullWidth

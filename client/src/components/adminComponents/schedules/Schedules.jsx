@@ -1,5 +1,4 @@
 import React from 'react';
-import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import { Box } from '@mui/material';
 import AddSchedule from './AddSchedule';
@@ -24,12 +23,11 @@ const Schedules = () => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 200) {
-        const data = await response.json();
-        setBarbers(data);
-        return
+      const data = await response.json();
+      if (data.error !== '') {
+        return console.log(data.error)
       }
-      return
+      setBarbers(data.response);
     } catch (error) {
       console.error('Error al obtener los barberos:', error);
     }
@@ -50,7 +48,6 @@ const Schedules = () => {
         const data = await response.json();
         setEmptyDates(data.empty)
         setSelectedMonth(data.range)
-        return
       }
     } catch (error) {
       console.error('Error al obtener el ID del día:', error);

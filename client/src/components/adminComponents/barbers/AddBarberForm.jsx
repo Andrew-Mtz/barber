@@ -5,9 +5,9 @@ import { errorMessages } from './errors';
 const baseUrl = process.env.REACT_APP_BASEURL
 
 const AddBarberForm = () => {
-  const [newBarber, setNewBarber] = React.useState({ name: "", last_name: "", description: "", full_description: "", phone: "", image: null })
+  const [newBarber, setNewBarber] = React.useState({ name: "", last_name: "", email: "", description: "", full_description: "", phone: "", image: null })
   const [imagePreview, setImagePreview] = React.useState(null);
-  const [errors, setErrors] = React.useState({ name: "", last_name: "", description: "", full_description: "", phone: "", image: "" });
+  const [errors, setErrors] = React.useState({ name: "", last_name: "", email: "", description: "", full_description: "", phone: "", image: "" });
   const [formError, setFormError] = React.useState("")
 
   const handleBarber = (property, event) => {
@@ -34,11 +34,16 @@ const AddBarberForm = () => {
   };
 
   const validateFields = async (property) => {
-    const { phone, description, full_description } = newBarber;
+    const { email, phone, description, full_description } = newBarber;
 
     if (!newBarber[property]) {
       setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.default }));
       throw errorMessages.default;
+    }
+
+    if (property === "email" && email && !isEmailValid(email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, [property]: errorMessages.email }));
+      throw errorMessages.email;
     }
 
     if (property === "phone" && phone && !isPhoneValid(phone)) {
@@ -82,6 +87,10 @@ const AddBarberForm = () => {
     }
   }
 
+  const isEmailValid = (email) => {
+    return /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  };
+
   const isPhoneValid = (phone) => {
     return /^[0-9]{9}$/.test(phone)
   };
@@ -93,6 +102,7 @@ const AddBarberForm = () => {
       validateFields("name"),
       validateFields("last_name"),
       validateFields("description"),
+      validateFields("email"),
       validateFields("full_description"),
       validateFields("phone"),
       validateFields("image"),
@@ -140,6 +150,21 @@ const AddBarberForm = () => {
             helperText={errors.last_name}
             error={!!errors.last_name}
             value={newBarber.last_name || ''}
+          />
+          <TextField
+            onChange={(event) => { handleBarber("email", event); setFormError(""); }}
+            onBlur={() => validateFields("email").catch(() => { })}
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="email"
+            label="Correo*"
+            name="email"
+            type='email'
+            helperText={errors.email}
+            error={!!errors.email}
+            autoComplete='email'
+            value={newBarber.email || ''}
           />
           <TextField
             onChange={(event) => { handleBarber("description", event); setFormError(""); }}

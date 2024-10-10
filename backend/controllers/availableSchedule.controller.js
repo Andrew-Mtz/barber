@@ -28,15 +28,25 @@ const getAllSchedules = async (req, res) => {
     const selectedBarberId = req.query.barber_id;
     const isoDate = new Date(selectedDate).toISOString();
 
-    // Aquí, realiza las consultas necesarias en la base de datos para encontrar el ID del día correspondiente.
-    const query = `SELECT id, status FROM schedules WHERE date = $1 AND barber_id = $2`;
+    // Descartar fechas
+    const queryToGetAny = `SELECT id, status FROM schedules WHERE barber_id = $1`;
+
+    const resultAll = await pool.query(queryToGetAny, [selectedBarberId]);
+
+    if (resultAll.rowCount === 0) {
+      return res.status(404).json({ response: '', error: `No hay fechas disponibles para el barbero seleccionado` });
+    }
+
+    // Dia no disponible
+    const query = `SELECT id, status, date FROM schedules WHERE date = $1 AND barber_id = $2`;
     const result = await pool.query(query, [isoDate, selectedBarberId]);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ message: `No se encontró ningún registro para la fecha: ${isoDate}.` });
+      return res.status(404).json({ response: '', error: `` });
     }
 
     const dayId = result.rows[0].id;
+    const date = result.rows[0].date;
     const dayStatus = result.rows[0].status;
 
     const availableScheduleQuery = `SELECT id, hour, status FROM available_schedules WHERE schedule_id = $1`;
@@ -44,10 +54,10 @@ const getAllSchedules = async (req, res) => {
 
     const availableSchedules = availableScheduleResult.rows;
 
-    res.status(200).json({ id: dayId, status: dayStatus, availableSchedules });
+    res.status(200).json({ response: { id: dayId, date: date, status: dayStatus, availableSchedules }, error: '' });
   } catch (error) {
     console.error('Error al buscar la fecha:', error);
-    return res.status(500).json({ error: "Hubo un error al buscar la fecha" });
+    return res.status(500).json({ response: '', error: "Hubo un error al buscar la fecha" });
   }
 }
 

@@ -25,11 +25,11 @@ const Haircuts = () => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        return console.log(response.statusText) //a corregir
-      }
       const data = await response.json();
-      setHaircuts(data);
+      if (data.error !== '') {
+        return console.log(data.error) //a corregir
+      }
+      setHaircuts(data.response);
     } catch (error) {
       console.error('Error al obtener los cortes de pelo:', error);
     }

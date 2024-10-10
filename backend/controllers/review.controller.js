@@ -3,9 +3,10 @@ import pool from "../db.js";
 const getReviewsByBarber = async (req, res) => {
   try {
     const existingReviewQuery = `
-    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name, b.name as barber_name, b.last_name as barber_last_name
+    SELECT r.id, r.comment, r.rating, r.created_at, c.name as user_name, r.last_name as user_last_name, b.name as barber_name, b.last_name as barber_last_name
     FROM reviews as r
     LEFT JOIN barbers as b ON r.barber_id = b.id
+    LEFT JOIN clients as c ON r.client_id = c.id
     WHERE barber_id = $1 AND is_pending = false
     ORDER BY DATE(created_at) DESC, rating DESC
     LIMIT 10;
@@ -21,9 +22,10 @@ const getReviewsByBarber = async (req, res) => {
 const getMyReview = async (req, res) => {
   try {
     const existingReviewQuery = `
-    SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name, b.name as barber_name, b.last_name as barber_last_name
+    SELECT r.id, r.comment, r.rating, r.created_at, c.name as user_name, r.last_name as user_last_name, b.name as barber_name, b.last_name as barber_last_name
     FROM reviews as r
     LEFT JOIN barbers as b ON r.barber_id = b.id
+    LEFT JOIN clients as c ON r.client_id = c.id
     WHERE r.id = $1 
   `;
     const selectedReviewId = req.query.review_id;
@@ -136,17 +138,18 @@ const getFilteredReviews = async (req, res) => {
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
 
     const existingReviewQuery = `
-      SELECT r.id, r.comment, r.rating, r.created_at, r.user_name, r.user_last_name, b.name as barber_name, b.last_name as barber_last_name
+      SELECT r.id, r.comment, r.rating, r.created_at, c.name as user_name, c.last_name as user_last_name, b.name as barber_name, b.last_name as barber_last_name
       FROM reviews as r
       LEFT JOIN barbers as b ON r.barber_id = b.id
+      LEFT JOIN clients as c ON r.client_id = c.id
       ${whereClause}
       ${orderByClause};
     `;
-
-    console.log(whereParams)
-
     const existingReviewResult = await pool.query(existingReviewQuery, whereParams);
-    res.json(existingReviewResult.rows);
+    if (existingReviewResult.rowCount === 0) {
+      return res.status(404).json({ response: [], error: '' });
+    }
+    res.json({ response: existingReviewResult.rows, error: '' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });

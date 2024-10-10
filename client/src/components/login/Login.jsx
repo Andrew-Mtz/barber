@@ -2,6 +2,7 @@ import React from 'react'
 import { loginStyles } from "./login.style.js"
 import { Alert, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material'
 import { useAuth } from '../../context/ValidationContext.jsx'
+import Spinner from '../spinner/Spinner.jsx'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
@@ -10,6 +11,7 @@ const Login = () => {
   const [account, setAccount] = React.useState({ email: "", password: "", rememberMe: false });
   const [errors, setErrors] = React.useState({ email: "", password: "" });
   const [formError, setFormError] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
 
   const handleAccount = (property, event) => {
     const accountCopy = { ...account };
@@ -61,11 +63,13 @@ const Login = () => {
 
       const parseRes = await response.json()
 
-      if (response.status === 409) return setFormError(parseRes)
-
+      if (response.status === 409) {
+        setLoading(false)
+        return setFormError(parseRes)
+      }
       localStorage.setItem("token", parseRes.token)
       localStorage.setItem("userType", parseRes.userType)
-
+      setLoading(false)
       checkAuth()
     } catch (error) {
       console.log(error)
@@ -74,12 +78,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
     await Promise.all([
       validateFields("email"),
       validateFields("password"),
     ])
       .then(() => logUser(account.email, account.password, account.rememberMe))
-      .catch((err) => { });
+      .catch((err) => { setLoading(false) });
   };
   return (
     <form style={loginStyles.form} onSubmit={handleSubmit}>
@@ -128,6 +133,7 @@ const Login = () => {
         sx={loginStyles.submit}
       >
         Sign In
+        {loading && <Spinner styles={{ marginLeft: '50px' }} />}
       </Button>
     </form>
   )

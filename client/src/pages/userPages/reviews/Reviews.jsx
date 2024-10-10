@@ -4,6 +4,7 @@ import { Box, Chip, Typography } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import FiltersReview from '../../../components/reviews/filtersReview/FiltersReview.jsx';
 import './reviews.css';
+import Loading from '../../../components/loading/Loading.jsx';
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
@@ -15,9 +16,12 @@ const Reviews = () => {
 
   const [filters, setFilters] = React.useState({ barber: 'all', haircut: 'all', type: "default" })
   const [reviews, setReviews] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(false);
 
   const getReviews = React.useCallback(async () => {
     try {
+      setLoading(false)
       const response = await fetch(`${baseUrl}/reviews-by-params?barber=${filters.barber}&haircut=${filters.haircut}&type=${filters.type}`, {
         method: 'get',
         headers: {
@@ -25,15 +29,16 @@ const Reviews = () => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        setReviews(response.statusText)
+      const data = await response.json();
+      if (data.error !== '') {
+        setReviews(data.response);
+        setError(data.error);
         return
       }
-      const data = await response.json();
-      console.log(data)
-      setReviews(data);
+      setReviews(data.response);
+      setLoading(true);
     } catch (error) {
-      console.error('Error al obtener los barberos:', error);
+      console.error('Error al obtener las reseñas:', error);
     }
   }, [filters.barber, filters.haircut, filters.type])
 
@@ -54,6 +59,7 @@ const Reviews = () => {
       }
       const data = await response.json();
       setReviews(data);
+      setLoading(true)
     } catch (error) {
       console.error('Error al obtener los barberos:', error);
     }
@@ -78,12 +84,13 @@ const Reviews = () => {
         <Chip label="Mi reseña" variant="outlined" onDelete={() => setMyBookingaPath(false)} />
       </Box>}
       <Box className={'reviews-section-container'}>
-        {reviews?.length > 0 && reviews?.map((review) => {
+        {loading && reviews?.length > 0 && reviews?.map((review) => {
           return (
             <CardReview key={review.id} review={review} />
           )
         })}
-        {reviews?.length === 0 && <Typography variant='h5' component='p' color="text.secondary">Aun no hay opiniones</Typography>}
+        {loading && reviews?.length === 0 && <Typography variant='h5' component='p' color="text.secondary">Aun no hay opiniones</Typography>}
+        {!loading && <Loading />}
       </Box>
     </Box>
   )

@@ -67,8 +67,8 @@ const getBarberDetail = async (year, month) => {
       h.price,
       s.date,
       av.hour,
-      u.name as user_name,
-      u.last_name as user_lastname
+      c.name as user_name,
+      c.last_name as user_lastname
     FROM 
       booking AS bk
     LEFT JOIN 
@@ -76,7 +76,7 @@ const getBarberDetail = async (year, month) => {
     LEFT JOIN 
       schedules AS s ON bk.date_id = s.id
     LEFT JOIN 
-      users AS u ON bk.user_id = u.id
+      clients AS c ON bk.client_id = c.id
     LEFT JOIN 
       barbers AS b ON bk.barber_id = b.id
     LEFT JOIN 

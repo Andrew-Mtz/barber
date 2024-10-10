@@ -27,12 +27,12 @@ const getAllBarbers = async (req, res) => {
     `;
     const result = await pool.query(query);
     if (result.rowCount === 0) {
-      return res.status(404).json([]);
+      return res.status(404).json({response: [], error: ''});
     }
-    res.json(result.rows);
+    res.json({response: result.rows, error: ''});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al obtener los datos de barberos y cortes de pelo' });
+    res.status(500).json({ response: [], error: 'Error al obtener los barberos' });
   }
 };
 
@@ -50,37 +50,51 @@ const getBarber = async (req, res) => {
 
 const createBarber = async (req, res) => {
   try {
-    const { name, last_name, description, full_description, phone } = req.body;
-    let image
+    await pool.query('BEGIN');
+
+    const { name, last_name, email, description, full_description, phone } = req.body;
+    let image;
 
     if (req.files && req.files.image) {
       const result = await uploadBarberImage(req.files.image.tempFilePath);
-      await fs.remove(req.files.image.tempFilePath)
+      await fs.remove(req.files.image.tempFilePath);
       image = {
         url: result.secure_url,
         public_id: result.public_id
-      }
+      };
     } else {
       return res.status(404).json({ message: 'Ha ocurrido un problema al guardar la foto' });
     }
 
-    const query = `
-          INSERT INTO barbers (name, last_name, description, full_description, phone, image)
-          VALUES ($1, $2, $3, $4, $5, $6)
-          RETURNING id
-        `;
-    const values = [name, last_name, description, full_description, phone, image];
-    const result = await pool.query(query, values);
-    const barberId = result.rows[0].id;
+    // Crear el usuario
+    const userQuery = `
+      INSERT INTO users (email, password, user_type)
+      VALUES ($1, $2, $3)
+      RETURNING id
+    `;
+    // Aquí podrías generar una contraseña aleatoria, por ejemplo:
+    const password = generateRandomPassword();
+    const userValues = [email, password, 'barber'];
+    const userResult = await pool.query(userQuery, userValues);
+    const userId = userResult.rows[0].id;
+
+    // Crear el barbero
+    const barberQuery = `
+      INSERT INTO barbers (name, last_name, description, full_description, phone, image, user_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id
+    `;
+    const barberValues = [name, last_name, description, full_description, phone, image, userId];
+    const barberResult = await pool.query(barberQuery, barberValues);
+    const barberId = barberResult.rows[0].id;
+
+    await pool.query('COMMIT');
 
     return res.status(201).json({ message: 'Barbero creado correctamente.', barberId });
   } catch (error) {
-    if (error.code === '23505' && error.constraint === 'unique_barber_schedule_date') {
-      res.status(409).json({ error: 'La reserva para esta fecha y horario ya existe.' });
-    } else {
-      console.error('Error al intentar agendarte:', error);
-      res.status(500).json({ error: 'Hubo un error al intentar hacer la reservación.' });
-    }
+    await pool.query('ROLLBACK');
+    console.error('Error al intentar crear el barbero:', error);
+    res.status(500).json({ error: 'Hubo un error al intentar crear el barbero.' });
   }
 }
 
@@ -135,6 +149,16 @@ const addHaircutsToBarber = async () => {
     console.log(error);
     res.status(500).send("Error en el servidor");
   }
+}
+
+const generateRandomPassword = (length = 10) => {
+  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    password += charset[randomIndex];
+  }
+  return password;
 }
 
 export {

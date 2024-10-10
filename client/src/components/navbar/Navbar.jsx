@@ -80,7 +80,7 @@ const Navbar = () => {
               <Link to="/">
                 <Box sx={logoContainer}>
                   <img
-                    src='/logo header.png'
+                    src='/logo header.avif'
                     alt='Barber logo'
                     style={logoStyle}
                   />

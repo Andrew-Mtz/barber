@@ -11,12 +11,12 @@ export const text = {
       second: {
         title: 'Barberos Expertos',
         desc: 'Nuestros barberos son expertos en su oficio y están capacitados para cualquier estilo y tendencia. Su pasión por la barbería se refleja en cada corte y arreglo de barba que realizan.',
-        url: 'https://ath2.unileverservices.com/wp-content/uploads/sites/13/2023/07/03194432/corte-de-pelo-hombre-segun-rostro.jpg'
+        url: 'https://res.cloudinary.com/dmusin0l0/image/upload/v1728533837/home/Screenshot_2024-10-10_011009_v3x6tq.png'
       },
       third: {
         title: 'Buen Ambiente',
         desc: 'Nuestro lugar es más que una barbería, es un espacio acogedor donde puedes relajarte y disfrutar. Contamos con cómodos asientos, entretenimiento como una PS4 para jugar, música y un equipo de cuatro barberos listos para atenderte.',
-        url: 'https://cdn.shopify.com/s/files/1/0601/6037/7032/files/La-luz-correcta-para-el-look-correcto-1.jpg?v=1666992320'
+        url: 'https://res.cloudinary.com/dmusin0l0/image/upload/t_rotate/v1728533311/home/Screenshot_2024-10-10_010117_dopnte.png'
       }
     }
   },

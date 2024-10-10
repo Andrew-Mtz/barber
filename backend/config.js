@@ -3,8 +3,8 @@ config()
 
 export const db = {
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'admin',
-  port: process.env.DB_PORT || 5432,
+  password: process.env.DB_PASSWORD || 'root1234',
+  port: process.env.DB_PORT || 5433,
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_DATABASE || 'barberdb'
 }

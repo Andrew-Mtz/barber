@@ -1,6 +1,7 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import React from 'react'
 import Haircut from './Haircut'
+import ListItemSkeleton from '../skeletons/ListItemSkeleton'
 
 const boxStyle = {
   display: 'flex',
@@ -14,6 +15,8 @@ const baseUrl = process.env.REACT_APP_BASEURL
 
 const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
   const [haircuts, setHaircuts] = React.useState([])
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState(false)
 
   const getHaircuts = React.useCallback(async () => {
     try {
@@ -24,11 +27,14 @@ const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        return console.log(response.statusText) //a corregir
-      }
       const data = await response.json();
-      setHaircuts(data);
+      if (data.error !== '') {
+        setHaircuts(data.response);
+        setError(data.error)
+        return
+      }
+      setHaircuts(data.response);
+      setLoading(true)
     } catch (error) {
       console.error('Error al obtener los cortes de pelo:', error);
     }
@@ -40,16 +46,22 @@ const HaircutList = ({ onHaircutSelect, selectedId, selectedBarberId }) => {
 
   return (
     <Box sx={boxStyle}>
-      {haircuts?.map((haircut) => (
-        <Haircut key={haircut.id}
-          onSelect={onHaircutSelect}
-          url={haircut.image.url}
-          name={haircut.name}
-          price={haircut.price}
-          description={haircut.description}
-          id={haircut.id}
-          selected={haircut.id === selectedId ? true : false} />
-      ))}
+      {error ? ( // Renderiza un mensaje de error si hay un error
+        <Typography color="error">{error}</Typography>
+      ) : loading ? ( // Muestra los barberos si está cargando
+        haircuts?.map((haircut) => (
+          <Haircut key={haircut.id}
+            onSelect={onHaircutSelect}
+            url={haircut.image.url}
+            name={haircut.name}
+            price={haircut.price}
+            description={haircut.description}
+            id={haircut.id}
+            selected={haircut.id === selectedId ? true : false} />
+        ))
+      ) : (
+        <ListItemSkeleton /> // Muestra el esqueleto de carga si no hay error y no está cargando
+      )}
     </Box>
   )
 }

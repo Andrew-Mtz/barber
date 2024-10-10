@@ -3,7 +3,7 @@ import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 
 const baseUrl = process.env.REACT_APP_BASEURL
 
-const FiltersReview = ({filters, handleFilters}) => {
+const FiltersReview = ({ filters, handleFilters }) => {
   const [barbers, setBarbers] = React.useState([])
   const [haircuts, setHaircuts] = React.useState([])
 
@@ -16,12 +16,12 @@ const FiltersReview = ({filters, handleFilters}) => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        setBarbers(response.statusText)
+      const data = await response.json();
+      if (data !== '') {
+        setBarbers(data.response)
         return
       }
-      const data = await response.json();
-      setBarbers(data);
+      setBarbers(data.response)
     } catch (error) {
       console.error('Error al obtener los barberos:', error);
     }
@@ -36,11 +36,12 @@ const FiltersReview = ({filters, handleFilters}) => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        return console.log(response.statusText) //a corregir
-      }
       const data = await response.json();
-      setHaircuts(data);
+      if (data !== '') {
+        setHaircuts(data.response)
+        return
+      }
+      setHaircuts(data.response)
     } catch (error) {
       console.error('Error al obtener los cortes de pelo:', error);
     }
@@ -65,7 +66,7 @@ const FiltersReview = ({filters, handleFilters}) => {
           <MenuItem value={'all'}>
             Todos
           </MenuItem>
-          {barbers.map((barber) => (
+          {barbers?.map((barber) => (
             <MenuItem key={barber.id} value={barber.id}>
               {barber.name} {barber.last_name}
             </MenuItem>
@@ -85,7 +86,7 @@ const FiltersReview = ({filters, handleFilters}) => {
           <MenuItem value={'all'}>
             Todos
           </MenuItem>
-          {haircuts.map((haircut) => (
+          {haircuts?.map((haircut) => (
             <MenuItem key={haircut.id} value={haircut.id}>
               {haircut.name}
             </MenuItem>

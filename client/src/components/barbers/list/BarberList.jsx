@@ -1,6 +1,7 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import React from 'react'
 import BarberListItem from './BarberListItem'
+import ListItemSkeleton from '../../skeletons/ListItemSkeleton'
 
 const boxStyle = {
   display: 'flex',
@@ -14,6 +15,8 @@ const baseUrl = process.env.REACT_APP_BASEURL
 
 const BarberList = ({ onBarberSelect, selectedId }) => {
   const [barbers, setBarbers] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState(false)
 
   React.useEffect(() => {
     getBarbers()
@@ -28,12 +31,14 @@ const BarberList = ({ onBarberSelect, selectedId }) => {
           'Accept': 'application/json'
         }
       });
-      if (response.status === 404) {
-        setBarbers(response.statusText)
+      const data = await response.json();
+      if (data.error !== '') {
+        setError(data.error)
+        setBarbers(data.response);
         return
       }
-      const data = await response.json();
-      setBarbers(data);
+      setBarbers(data.response);
+      setLoading(true)
     } catch (error) {
       console.error('Error al obtener los barberos:', error);
     }
@@ -41,16 +46,24 @@ const BarberList = ({ onBarberSelect, selectedId }) => {
 
   return (
     <Box sx={boxStyle}>
-      {barbers?.map((barber) => (
-        <BarberListItem key={barber.id}
-          onSelect={onBarberSelect}
-          url={barber.image.url}
-          name={barber.name}
-          lastName={barber.last_name}
-          description={barber.description}
-          id={barber.id}
-          selected={barber.id === selectedId ? true : false} />
-      ))}
+      {error ? ( // Renderiza un mensaje de error si hay un error
+        <Typography color="error">{error}</Typography>
+      ) : loading ? ( // Muestra los barberos si está cargando
+        barbers?.map((barber) => (
+          <BarberListItem
+            key={barber.id}
+            onSelect={onBarberSelect}
+            url={barber.image.url}
+            name={barber.name}
+            lastName={barber.last_name}
+            description={barber.description}
+            id={barber.id}
+            selected={barber.id === selectedId}
+          />
+        ))
+      ) : (
+        <ListItemSkeleton /> // Muestra el esqueleto de carga si no hay error y no está cargando
+      )}
     </Box>
   )
 }

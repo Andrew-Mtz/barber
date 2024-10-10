@@ -17,6 +17,7 @@ import Reviews from './pages/userPages/reviews/Reviews'
 import ManagePage from './pages/adminPages/ManagePage'
 import { useAuth } from './context/ValidationContext.jsx'
 import { Container } from '@mui/material'
+import ManageHaircuts from './pages/barberPages/ManageHaircuts.jsx'
 
 const App = () => {
   const { isAdmin, isBarber } = useAuth();
@@ -46,11 +47,22 @@ const App = () => {
           {isAdmin ? (
             <>
               <Route path='/manage-page' element={<ManagePage />} />
-              <Route path='/*' element={<Navigate to='/manage-page' />} />
+              <Route path='/account' element={<Navigate to='/manage-page' />} />
             </>
           ) : (
             <>
               <Route path='/manage-page' element={<Navigate to='/' />} />
+              <Route path='/account' element={<Account />} />
+            </>
+          )}
+          {isBarber ? (
+            <>
+              <Route path='/manage-haircuts' element={<ManageHaircuts />} />
+              <Route path='/*' element={<Navigate to='/manage-haircuts' />} />
+            </>
+          ) : (
+            <>
+              <Route path='/manage-haircuts' element={<Navigate to='/' />} />
               <Route path='/account' element={<Account />} />
             </>
           )}
