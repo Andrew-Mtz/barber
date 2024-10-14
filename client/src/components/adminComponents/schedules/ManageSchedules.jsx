@@ -9,6 +9,7 @@ import {
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AvailableHours from '../../calendar/AvailableHours';
+import PropTypes from 'prop-types';
 
 const baseUrl = process.env.REACT_APP_BASEURL;
 
@@ -25,7 +26,7 @@ const paper = {
   },
 };
 
-const ManageSchedules = (props) => {
+const ManageSchedules = ({ barberId, selectedMonth }) => {
   const [value, setValue] = React.useState(null);
   const [unavailableDates, setUnavailableDates] = React.useState([]);
   const [selectedDateData, setSelectedDateData] = React.useState({
@@ -36,24 +37,24 @@ const ManageSchedules = (props) => {
     unavailableSchedules: [],
   });
   const [selectedAvailableHours, setSelectedAvailableHours] = React.useState(
-    []
+    [],
   );
   const [selectedReservedHours, setSelectedReservedHours] = React.useState([]);
   const [selectedUnavailableHours, setSelectedUnavailableHours] =
     React.useState([]);
 
-  const handleDateChange = async (newValue) => {
+  const handleDateChange = async newValue => {
     try {
       const selectedDate = newValue.format('YYYY-MM-DD');
       const response = await fetch(
-        `${baseUrl}/diferents-schedules-by-date?date=${selectedDate}&barber_id=${props.barberId}`,
+        `${baseUrl}/diferents-schedules-by-date?date=${selectedDate}&barber_id=${barberId}`,
         {
           method: 'get',
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
           },
-        }
+        },
       );
       setSelectedAvailableHours([]);
       setSelectedReservedHours([]);
@@ -74,11 +75,11 @@ const ManageSchedules = (props) => {
     }
   };
 
-  const shouldDisableDate = (day) => {
+  const shouldDisableDate = day => {
     return dayjs(day).day() === 0;
   };
 
-  const disableDay = async (id) => {
+  const disableDay = async id => {
     try {
       const token = localStorage.getItem('token');
       await fetch(`${baseUrl}/disable-day/${id}`, {
@@ -94,7 +95,7 @@ const ManageSchedules = (props) => {
     }
   };
 
-  const enableDay = async (id) => {
+  const enableDay = async id => {
     try {
       const token = localStorage.getItem('token');
       await fetch(`${baseUrl}/enable-day/${id}`, {
@@ -116,28 +117,28 @@ const ManageSchedules = (props) => {
         handleHourSelection(
           hourId,
           selectedAvailableHours,
-          setSelectedAvailableHours
+          setSelectedAvailableHours,
         );
         break;
       case 2:
         handleHourSelection(
           hourId,
           selectedReservedHours,
-          setSelectedReservedHours
+          setSelectedReservedHours,
         );
         break;
       case 3:
         handleHourSelection(
           hourId,
           selectedUnavailableHours,
-          setSelectedUnavailableHours
+          setSelectedUnavailableHours,
         );
         break;
       default:
     }
   };
 
-  const disableHour = async (ids) => {
+  const disableHour = async ids => {
     try {
       const body = { ids };
       const token = localStorage.getItem('token');
@@ -155,7 +156,7 @@ const ManageSchedules = (props) => {
     }
   };
 
-  const enableHour = async (ids) => {
+  const enableHour = async ids => {
     try {
       const body = { ids };
       const token = localStorage.getItem('token');
@@ -178,7 +179,7 @@ const ManageSchedules = (props) => {
 
     if (isHourAdded) {
       const updatedHours = selectedHours.filter(
-        (haircutId) => haircutId !== hourId
+        haircutId => haircutId !== hourId,
       );
       setSelectedHours(updatedHours);
     } else {
@@ -199,7 +200,7 @@ const ManageSchedules = (props) => {
             'Content-Type': 'application/json',
             Accept: 'application/json',
           },
-        }
+        },
       );
       const data = await response.json();
       setUnavailableDates(data);
@@ -209,16 +210,15 @@ const ManageSchedules = (props) => {
   };
 
   React.useEffect(() => {
-    getUnavailableDates(props.barberId, props.selectedMonth.startMonth);
+    getUnavailableDates(barberId, selectedMonth.startMonth);
     setValue(null);
-  }, [props]);
+  }, [barberId, selectedMonth.startMonth]);
 
-  function ServerDay(props) {
-    const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+  function ServerDay(params) {
+    const { highlightedDays = [], day, outsideCurrentMonth, ...other } = params;
 
     const isUnavailable =
-      !props.outsideCurrentMonth &&
-      highlightedDays.indexOf(props.day.date()) >= 0;
+      !outsideCurrentMonth && highlightedDays.indexOf(day.date()) >= 0;
 
     const dayStyle = {
       backgroundColor: isUnavailable && 'lightgray',
@@ -247,8 +247,8 @@ const ManageSchedules = (props) => {
               value={value}
               /*  disablePast */
               onChange={handleDateChange}
-              minDate={dayjs(props.selectedMonth?.startMonth)}
-              maxDate={dayjs(props.selectedMonth?.endMonth)}
+              minDate={dayjs(selectedMonth?.startMonth)}
+              maxDate={dayjs(selectedMonth?.endMonth)}
               shouldDisableDate={shouldDisableDate}
               disableHighlightToday
               views={['day']}
@@ -257,8 +257,8 @@ const ManageSchedules = (props) => {
               }}
               slotProps={{
                 day: {
-                  highlightedDays: unavailableDates?.map((date) =>
-                    dayjs(date).date()
+                  highlightedDays: unavailableDates?.map(date =>
+                    dayjs(date).date(),
                   ),
                 },
               }}
@@ -334,6 +334,11 @@ const ManageSchedules = (props) => {
       )}
     </Paper>
   );
+};
+
+ManageSchedules.propTypes = {
+  barberId: PropTypes.string,
+  selectedMonth: PropTypes.object,
 };
 
 export default ManageSchedules;

@@ -131,9 +131,7 @@ const EditBarberForm = ({
       const parseRes = await response.json();
       if (response.status === 409) return setFormError(parseRes);
       setSuccessfullyEdit(!successfullyEdit);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const handleSubmit = async e => {
@@ -175,9 +173,7 @@ const EditBarberForm = ({
         return setSuccessfullyEdit(!successfullyEdit);
       }
       setFormError('Error al eliminar el barbero');
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return (
