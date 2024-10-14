@@ -8,38 +8,38 @@ import CommentIcon from '@mui/icons-material/Comment';
 
 export const costumerMenu = [
   {
-    "title": "Inicio",
-    "icon": HomeIcon,
-    "link": "/"
+    title: 'Inicio',
+    icon: HomeIcon,
+    link: '/',
   },
   {
-    "title": "Reservar",
-    "icon": CalendarMonthIcon,
-    "link": "/booking"
+    title: 'Reservar',
+    icon: CalendarMonthIcon,
+    link: '/booking',
   },
   {
-    "title": "Mi reserva",
-    "icon": EventNoteIcon,
-    "link": "/my-booking"
+    title: 'Mi reserva',
+    icon: EventNoteIcon,
+    link: '/my-booking',
   },
   {
-    "title": "Nuestro equipo",
-    "icon": GroupIcon,
-    "link": "/our-team"
+    title: 'Nuestro equipo',
+    icon: GroupIcon,
+    link: '/our-team',
   },
   {
-    "title": "Reseñas",
-    "icon": CommentIcon,
-    "link": "/reviews"
+    title: 'Reseñas',
+    icon: CommentIcon,
+    link: '/reviews',
   },
   {
-    "title": "Contacto",
-    "icon": EmailIcon,
-    "link": "/contact"
+    title: 'Contacto',
+    icon: EmailIcon,
+    link: '/contact',
   },
   {
-    "title": "Cuenta",
-    "icon": AccountCircleIcon,
-    "link": "/account"
+    title: 'Cuenta',
+    icon: AccountCircleIcon,
+    link: '/account',
   },
-]
+];

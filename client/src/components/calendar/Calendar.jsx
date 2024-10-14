@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import PropTypes from 'prop-types';
@@ -9,16 +9,26 @@ import { Box, Paper, Typography } from '@mui/material';
 import AvailableHours from './AvailableHours.jsx';
 import Loading from '../loading/Loading.jsx';
 
-const baseUrl = process.env.REACT_APP_BASEURL
+const baseUrl = process.env.REACT_APP_BASEURL;
 
-const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) => {
+const Calendar = ({
+  onDaySelect,
+  onHourSelect,
+  selectedId,
+  selectedBarberId,
+}) => {
   const [value, setValue] = React.useState(dayjs());
-  const [selectedDateData, setSelectedDateData] = React.useState({ id: 0, status: null, availableSchedules: [], unavailableSchedules: [] });
+  const [selectedDateData, setSelectedDateData] = React.useState({
+    id: 0,
+    status: null,
+    availableSchedules: [],
+    unavailableSchedules: [],
+  });
   const [unavailableDates, setUnavailableDates] = React.useState([]);
   const [programmaticChange, setProgrammaticChange] = React.useState(false);
-  const [loadingHours, setLoadingHours] = React.useState(false)
-  const [loadingCalendar, setLoadingCalendar] = React.useState(false)
-  const [error, setError] = React.useState(false)
+  const [loadingHours, setLoadingHours] = React.useState(false);
+  const [loadingCalendar, setLoadingCalendar] = React.useState(false);
+  const [error, setError] = React.useState(false);
 
   const month = dayjs().get('month') + 2;
   const year = dayjs().get('year');
@@ -28,48 +38,57 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
 
   const getUnavailableDates = React.useCallback(async () => {
     try {
-      const response = await fetch(`${baseUrl}/unavailable-dates-by-barber?&barber_id=${selectedBarberId}`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
+      const response = await fetch(
+        `${baseUrl}/unavailable-dates-by-barber?&barber_id=${selectedBarberId}`,
+        {
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },
+      );
       const data = await response.json();
       setUnavailableDates(data);
-      setLoadingCalendar(true)
+      setLoadingCalendar(true);
     } catch (error) {
-      console.error('Error al obtener el ID del día:', error);
+      alert('Error al obtener el ID del día:', error);
     }
   }, [selectedBarberId]);
 
-  const handleDateChange = React.useCallback(async (newValue) => {
-    try {
-      setProgrammaticChange(true);
-      const selectedDate = newValue.format("YYYY-MM-DD");
-      const response = await fetch(`${baseUrl}/all-schedules-by-date?date=${selectedDate}&barber_id=${selectedBarberId}`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+  const handleDateChange = React.useCallback(
+    async newValue => {
+      try {
+        setProgrammaticChange(true);
+        const selectedDate = newValue.format('YYYY-MM-DD');
+        const response = await fetch(
+          `${baseUrl}/all-schedules-by-date?date=${selectedDate}&barber_id=${selectedBarberId}`,
+          {
+            method: 'get',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+          },
+        );
+        const data = await response.json();
+        if (data.error !== '') {
+          setValue(newValue);
+          setSelectedDateData({ id: 0, status: null, schedules: [] });
+          setError(data.error);
+          return;
         }
-      });
-      const data = await response.json();
-      if (data.error !== '') {
+        setSelectedDateData(data.response);
+        onDaySelect(data.response.id, data.response.date);
         setValue(newValue);
-        setSelectedDateData({ id: 0, status: null, schedules: [] });
-        setError(data.error);
+        setLoadingHours(true);
         return;
+      } catch (error) {
+        alert('Error al obtener el ID del día:', error);
       }
-      setSelectedDateData(data.response);
-      onDaySelect(data.response.id, data.response.date)
-      setValue(newValue);
-      setLoadingHours(true)
-      return;
-    } catch (error) {
-      console.error('Error al obtener el ID del día:', error);
-    }
-  }, [onDaySelect, selectedBarberId]);
+    },
+    [onDaySelect, selectedBarberId],
+  );
 
   React.useEffect(() => {
     getUnavailableDates();
@@ -81,9 +100,12 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
     }
   }, [handleDateChange, value, programmaticChange]);
 
-  const shouldDisableDate = (day) => {
+  const shouldDisableDate = day => {
     const isSunday = dayjs(day).day() === 0;
-    const isUnavailableDate = unavailableDates?.some(date => dayjs(date).format('YYYY-MM-DD') === dayjs(day).format('YYYY-MM-DD'));
+    const isUnavailableDate = unavailableDates?.some(
+      date =>
+        dayjs(date).format('YYYY-MM-DD') === dayjs(day).format('YYYY-MM-DD'),
+    );
     return isSunday || isUnavailableDate;
   };
 
@@ -94,7 +116,7 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
     marginTop: 3,
     justifyContent: 'center',
     '@media (max-width: 745px)': {
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
     },
   };
 
@@ -108,7 +130,10 @@ const Calendar = ({ onDaySelect, onHourSelect, selectedId, selectedBarberId }) =
         <>
           {loadingCalendar && loadingHours && (
             <Box>
-              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale="es"
+              >
                 <DateCalendar
                   value={value}
                   views={['day']}
@@ -140,7 +165,7 @@ Calendar.propTypes = {
   onDaySelect: PropTypes.func,
   onHourSelect: PropTypes.func.isRequired,
   selectedId: PropTypes.number.isRequired,
-  selectedBarberId: PropTypes.number
+  selectedBarberId: PropTypes.number,
 };
 
 export default Calendar;

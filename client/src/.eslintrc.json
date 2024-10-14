@@ -1,0 +1,36 @@
+{
+  "env": {
+    "browser": true, // Define el entorno del navegador
+    "es2021": true, // Permite las características de ECMAScript 2021
+    "node": true, // Define el entorno de Node.js
+    "jest": true // Permite usar Jest para pruebas
+  },
+  "extends": [
+    "plugin:react/recommended",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:react/jsx-runtime"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true // Permite el uso de JSX
+    },
+    "ecmaVersion": 12, // ECMAScript 2021
+    "sourceType": "module" // Permite el uso de imports
+  },
+  "plugins": [
+    "react", // Plugin para React
+    "prettier" // Plugin para Prettier
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "no-console": "warn", // Advierte sobre el uso de console.log
+    "no-unused-vars": "warn", // Advierte sobre variables no utilizadas
+    "eqeqeq": ["error", "always"] // Obliga el uso de === y !==
+  },
+  "settings": {
+    "react": {
+      "version": "detect" // Detecta automáticamente la versión de React
+    }
+  }
+}

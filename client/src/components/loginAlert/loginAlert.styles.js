@@ -14,7 +14,8 @@ export const styles = {
     textAlign: 'left',
     borderRadius: '0.5rem',
     maxWidth: '390px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    boxShadow:
+      '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
   },
   header: {
     padding: '1.25rem 1rem 1rem 1rem',
@@ -58,5 +59,5 @@ export const styles = {
     justifyContent: 'space-between',
     margin: '0.75rem 1rem',
     backgroundColor: '#F9FAFB',
-  }
-}
+  },
+};

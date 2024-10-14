@@ -1,10 +1,29 @@
-import React from 'react'
-import { Box, Card, CardActionArea, CardContent, CardMedia, Typography } from '@mui/material'
+import React from 'react';
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography,
+} from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import PropTypes from 'prop-types';
 
-const BarberListItem = ({ onSelect, url, name, lastName, description, id, selected }) => {
+const BarberListItem = ({
+  onSelect,
+  url,
+  name,
+  lastName,
+  description,
+  id,
+  selected,
+}) => {
   return (
-    <Card sx={{ maxWidth: 260, minWidth: 260, borderRadius: '10px' }} onClick={() => onSelect(id, name, lastName)}>
+    <Card
+      sx={{ maxWidth: 260, minWidth: 260, borderRadius: '10px' }}
+      onClick={() => onSelect(id, name, lastName)}
+    >
       <CardActionArea>
         <CardMedia
           component="img"
@@ -17,7 +36,9 @@ const BarberListItem = ({ onSelect, url, name, lastName, description, id, select
             <Typography gutterBottom variant="h5" component="div">
               {name} {lastName}
             </Typography>
-            {selected && <CheckCircleOutlineIcon sx={{ color: 'var(--primary-color)' }} />}
+            {selected && (
+              <CheckCircleOutlineIcon sx={{ color: 'var(--primary-color)' }} />
+            )}
           </Box>
           <Typography variant="body2" color="text.secondary">
             {description}
@@ -25,7 +46,17 @@ const BarberListItem = ({ onSelect, url, name, lastName, description, id, select
         </CardContent>
       </CardActionArea>
     </Card>
-  )
-}
+  );
+};
 
-export default BarberListItem
+BarberListItem.propTypes = {
+  onSelect: PropTypes.func,
+  url: PropTypes.string,
+  name: PropTypes.string,
+  lastName: PropTypes.string,
+  description: PropTypes.string,
+  id: PropTypes.string,
+  selected: PropTypes.bool,
+};
+
+export default BarberListItem;

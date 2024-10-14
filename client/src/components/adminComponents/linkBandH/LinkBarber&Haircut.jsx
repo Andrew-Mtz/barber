@@ -1,20 +1,20 @@
-import React from 'react'
+import React from 'react';
 import { Box, Button } from '@mui/material';
-import './linkBarber&Haircut.css'
+import './linkBarber&Haircut.css';
 import CustomList from './CustomList';
 
-const baseUrl = process.env.REACT_APP_BASEURL
+const baseUrl = process.env.REACT_APP_BASEURL;
 
 const LinkBarberAndHaircut = () => {
   const [checkedBarber, setCheckedBarber] = React.useState([0]);
   const [originalHaircuts, setOriginalHaircuts] = React.useState([]);
   const [checkedHaircuts, setCheckedHaircuts] = React.useState([]);
-  const [barbers, setBarbers] = React.useState([])
-  const [haircuts, setHaircuts] = React.useState([])
+  const [barbers, setBarbers] = React.useState([]);
+  const [haircuts, setHaircuts] = React.useState([]);
 
   React.useEffect(() => {
-    getData()
-  }, [])
+    getData();
+  }, []);
 
   const getData = async () => {
     try {
@@ -23,36 +23,38 @@ const LinkBarberAndHaircut = () => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.status === 200) {
         const data = await response.json();
         setBarbers(data.barbers);
         setHaircuts(data.haircuts);
-        return
+        return;
       }
-      return //setBarbers(response.statusText)
+      return; //setBarbers(response.statusText)
     } catch (error) {
-      console.error('Error al obtener los barberos:', error);
+      alert('Error al obtener los barberos:', error);
     }
-  }
-
-  const handleToggleBarber = (id) => {
-    if (checkedBarber === id) {
-      setCheckedBarber([0])
-      return setCheckedHaircuts([])
-    }
-    setCheckedBarber([id])
-    getLinkedHaircuts(id)
   };
 
-  const handleToggleHaircut = (id) => {
+  const handleToggleBarber = id => {
+    if (checkedBarber === id) {
+      setCheckedBarber([0]);
+      return setCheckedHaircuts([]);
+    }
+    setCheckedBarber([id]);
+    getLinkedHaircuts(id);
+  };
+
+  const handleToggleHaircut = id => {
     const isHaircutChecked = checkedHaircuts.includes(id);
 
     if (isHaircutChecked) {
-      const updatedHaircuts = checkedHaircuts.filter(haircutId => haircutId !== id);
+      const updatedHaircuts = checkedHaircuts.filter(
+        haircutId => haircutId !== id,
+      );
       setCheckedHaircuts(updatedHaircuts);
     } else {
       const updatedHaircuts = [...checkedHaircuts, id];
@@ -60,53 +62,53 @@ const LinkBarberAndHaircut = () => {
     }
   };
 
-  const getLinkedHaircuts = async (id) => {
+  const getLinkedHaircuts = async id => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${baseUrl}/linkedHaircuts?id=${id}`, {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.status === 200) {
         const data = await response.json();
-        setCheckedHaircuts(data)
-        setOriginalHaircuts(data)
+        setCheckedHaircuts(data);
+        setOriginalHaircuts(data);
       }
-      return //setBarbers(response.statusText)
+      return; //setBarbers(response.statusText)
     } catch (error) {
-      console.error('Error al obtener los barberos:', error);
+      alert('Error al obtener los barberos:', error);
     }
-  }
+  };
 
   const saveChanges = async () => {
     try {
-      const body = { barberId: checkedBarber[0], haircutIds: checkedHaircuts, linkedHaircutsIds: originalHaircuts }
+      const body = {
+        barberId: checkedBarber[0],
+        haircutIds: checkedHaircuts,
+        linkedHaircutsIds: originalHaircuts,
+      };
       const token = localStorage.getItem('token');
       const response = await fetch(`${baseUrl}/associateHaircutsWithBarber`, {
-        method: "POST",
-        headers:
-        {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(body)
-      })
+        body: JSON.stringify(body),
+      });
 
-      const parseRes = await response.json()
+      const parseRes = await response.json();
 
-      if (response.status === 409) return console.log(parseRes)
-
-      console.log('exito')
-
+      if (response.status === 409) return alert(parseRes);
     } catch (error) {
-      console.log(error)
+      alert(error);
     }
-  }
+  };
 
   const sameArrays = (arr1, arr2) => {
     if (arr1.length !== arr2.length) {
@@ -117,15 +119,31 @@ const LinkBarberAndHaircut = () => {
     const sortedArr2 = arr2.slice().sort();
 
     return sortedArr1.every((value, index) => value === sortedArr2[index]);
-  }
+  };
 
   return (
-    <Box className='link-lists-container'>
-      <CustomList title={'Barberos'} items={barbers} onFunction={handleToggleBarber} checks={checkedBarber} />
-      <CustomList title={'Cortes de pelo'} items={haircuts} onFunction={handleToggleHaircut} checks={checkedHaircuts} />
-      <Button variant='contained' disabled={sameArrays(originalHaircuts, checkedHaircuts)} onClick={saveChanges}>Guardar cambios</Button>
+    <Box className="link-lists-container">
+      <CustomList
+        title={'Barberos'}
+        items={barbers}
+        onFunction={handleToggleBarber}
+        checks={checkedBarber}
+      />
+      <CustomList
+        title={'Cortes de pelo'}
+        items={haircuts}
+        onFunction={handleToggleHaircut}
+        checks={checkedHaircuts}
+      />
+      <Button
+        variant="contained"
+        disabled={sameArrays(originalHaircuts, checkedHaircuts)}
+        onClick={saveChanges}
+      >
+        Guardar cambios
+      </Button>
     </Box>
-  )
-}
+  );
+};
 
-export default LinkBarberAndHaircut
+export default LinkBarberAndHaircut;

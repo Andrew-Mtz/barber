@@ -14,7 +14,7 @@ export const styles = {
     textAlign: 'center',
     transition: 'transform 0.8s',
     transformStyle: 'preserve-3d',
-    transform: 'rotateY(180deg)'
+    transform: 'rotateY(180deg)',
   },
   flipCard: {
     backgroundColor: 'transparent',
@@ -46,7 +46,7 @@ export const styles = {
     webkitBackfaceVisibility: 'hidden',
     backfaceVisibility: 'hidden',
     borderRadius: '1rem',
-    transform: 'rotateY(180deg)'
+    transform: 'rotateY(180deg)',
   },
   form: {
     position: 'relative',
@@ -61,7 +61,7 @@ export const styles = {
     borderRadius: '10px',
     boxSizing: 'border-box',
     '@media screen and (max-width: 768px)': {
-      width: '330px'
+      width: '330px',
     },
   },
   title: {
@@ -82,10 +82,10 @@ export const styles = {
     fontWeight: 500,
     color: '#fff',
     cursor: 'pointer',
-    mt: 2
+    mt: 2,
   },
   rememberBtnContainer: {
     marginTop: 1.5,
-    marginBottom: 2
-  }
+    marginBottom: 2,
+  },
 };

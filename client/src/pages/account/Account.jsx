@@ -1,7 +1,15 @@
-import React from 'react'
-import { Avatar, Box, Button, Grid, Paper, Typography, Divider } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { accountStyles } from "./account.style.js"
+import React from 'react';
+import {
+  Avatar,
+  Box,
+  Button,
+  Grid,
+  Paper,
+  Typography,
+  Divider,
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { accountStyles } from './account.style.js';
 import { useLocation } from 'react-router-dom';
 import Login from '../../components/login/Login.jsx';
 import Register from '../../components/register/Register.jsx';
@@ -12,13 +20,16 @@ const Account = () => {
   const { isLoggedIn } = useAuth();
   const location = useLocation();
 
-  const [display, setDisplay] = React.useState("Sign in");
+  const [display, setDisplay] = React.useState('Sign in');
 
-  const isBookingRoute = location.state && location.state.previousPath === '/booking';
+  const isBookingRoute =
+    location.state && location.state.previousPath === '/booking';
 
   return (
     <>
-      {isLoggedIn ? <UserData isBookingRoute={isBookingRoute} /> :
+      {isLoggedIn ? (
+        <UserData isBookingRoute={isBookingRoute} />
+      ) : (
         <Grid
           item
           sx={accountStyles.size}
@@ -30,29 +41,68 @@ const Account = () => {
         >
           <Paper sx={accountStyles.paper}>
             <Box sx={accountStyles.headerContainer}>
-              <Button sx={accountStyles.headerBtn} onClick={() => setDisplay("Sign in")}>
-                <Avatar sx={display === "Sign in" ? accountStyles.avatar : accountStyles.inactiveAvatar}>
+              <Button
+                sx={accountStyles.headerBtn}
+                onClick={() => setDisplay('Sign in')}
+              >
+                <Avatar
+                  sx={
+                    display === 'Sign in'
+                      ? accountStyles.avatar
+                      : accountStyles.inactiveAvatar
+                  }
+                >
                   <LockOutlinedIcon />
                 </Avatar>
-                <Typography variant="body1" component='p' sx={display === "Sign in" ? accountStyles.activeText : accountStyles.inactiveText}>
+                <Typography
+                  variant="body1"
+                  component="p"
+                  sx={
+                    display === 'Sign in'
+                      ? accountStyles.activeText
+                      : accountStyles.inactiveText
+                  }
+                >
                   Sign in
                 </Typography>
               </Button>
-              <Divider orientation="vertical" flexItem sx={{ width: '0.5px', backgroundColor: '#EEEDED' }} />
-              <Button sx={accountStyles.headerBtn} onClick={() => setDisplay("Sign up")}>
-                <Avatar sx={display === "Sign up" ? accountStyles.avatar : accountStyles.inactiveAvatar}>
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ width: '0.5px', backgroundColor: '#EEEDED' }}
+              />
+              <Button
+                sx={accountStyles.headerBtn}
+                onClick={() => setDisplay('Sign up')}
+              >
+                <Avatar
+                  sx={
+                    display === 'Sign up'
+                      ? accountStyles.avatar
+                      : accountStyles.inactiveAvatar
+                  }
+                >
                   <LockOutlinedIcon />
                 </Avatar>
-                <Typography variant="body1" component='p' sx={display === "Sign up" ? accountStyles.activeText : accountStyles.inactiveText}>
+                <Typography
+                  variant="body1"
+                  component="p"
+                  sx={
+                    display === 'Sign up'
+                      ? accountStyles.activeText
+                      : accountStyles.inactiveText
+                  }
+                >
                   Sign up
                 </Typography>
               </Button>
             </Box>
-            {display === "Sign in" ? <Login /> : <Register />}
+            {display === 'Sign in' ? <Login /> : <Register />}
           </Paper>
-        </Grid>}
+        </Grid>
+      )}
     </>
   );
-}
+};
 
-export default Account
+export default Account;

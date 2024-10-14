@@ -1,3 +1,3 @@
 export const errorMessages = {
-  default: "Este campo es requerido",
+  default: 'Este campo es requerido',
 };

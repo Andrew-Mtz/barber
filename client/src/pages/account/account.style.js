@@ -1,45 +1,45 @@
 export const accountStyles = {
   size: {
-    backgroundColor: "transparent",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'transparent',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   paper: {
-    width: "500px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    width: '500px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     padding: 4,
     paddingBottom: 0,
     '@media (max-width: 425px)': {
-      width: 'auto'
+      width: 'auto',
     },
   },
   headerContainer: {
-    display: "flex",
-    justifyContent: "space-around",
-    width: "100%",
+    display: 'flex',
+    justifyContent: 'space-around',
+    width: '100%',
   },
   headerBtn: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    color: "black"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    color: 'black',
   },
   avatar: {
     margin: 0,
-    backgroundColor: "pink"
+    backgroundColor: 'pink',
   },
   inactiveAvatar: {
     margin: 0,
-    backgroundColor: "#EEEDED"
+    backgroundColor: '#EEEDED',
   },
   inactiveText: {
-    color: "#EEEDED"
+    color: '#EEEDED',
   },
   activeText: {
-    color: "black"
-  }
+    color: 'black',
+  },
 };

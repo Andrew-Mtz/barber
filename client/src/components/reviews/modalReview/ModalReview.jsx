@@ -1,48 +1,68 @@
-import { Box, Button, Modal, Rating, TextField, Typography } from '@mui/material';
-import React from 'react'
+import {
+  Box,
+  Button,
+  Modal,
+  Rating,
+  TextField,
+  Typography,
+} from '@mui/material';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-const baseUrl = process.env.REACT_APP_BASEURL
+const baseUrl = process.env.REACT_APP_BASEURL;
 
-const ModalReview = ({ review_id, open, handleClose }) => {
-  const [formData, setFormData] = React.useState({ value: null, message: "" });
-  const [formError, setFormError] = React.useState({ value: "", message: "" });
+const ModalReview = ({ reviewId, open, handleClose }) => {
+  const [formData, setFormData] = React.useState({ value: null, message: '' });
+  const [formError, setFormError] = React.useState({ value: '', message: '' });
 
   const handleData = (property, value) => {
     const formDataCopy = { ...formData };
     formDataCopy[property] = value;
     setFormData(formDataCopy);
-    setFormError("")
-  }
+    setFormError('');
+  };
 
-  const sendData = (reviewId) => {
-    if (formData.value !== null && formData.message !== "") {
-      return reviewBooking(reviewId)
+  const sendData = reviewId => {
+    if (formData.value !== null && formData.message !== '') {
+      return reviewBooking(reviewId);
     }
-    formData.value === null && setFormError((prevErrors) => ({ ...prevErrors, value: "Debes puntar almenos con una estrella" }));
-    formData.message === "" && setFormError((prevErrors) => ({ ...prevErrors, message: "Debes agregar un mensaje" }));
-  }
+    formData.value === null &&
+      setFormError(prevErrors => ({
+        ...prevErrors,
+        value: 'Debes puntar almenos con una estrella',
+      }));
+    formData.message === '' &&
+      setFormError(prevErrors => ({
+        ...prevErrors,
+        message: 'Debes agregar un mensaje',
+      }));
+  };
 
-  const reviewBooking = async (reviewId) => {
+  const reviewBooking = async reviewId => {
     try {
-      const data = { reviewId, rating: formData.value, comment: formData.message }
+      const data = {
+        reviewId,
+        rating: formData.value,
+        comment: formData.message,
+      };
       const token = localStorage.getItem('token');
       const response = await fetch(`${baseUrl}/create-review`, {
         method: 'post',
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
       });
       if (response.status === 409) {
-        return console.log('algo salio mal')
+        return alert('algo salio mal');
       }
-      window.location.reload()
+      window.location.reload();
     } catch (error) {
-      console.error('Error al completar la reserva:', error);
+      alert('Error al completar la reserva:', error);
     }
-  }
+  };
 
   const style = {
     position: 'absolute',
@@ -66,29 +86,39 @@ const ModalReview = ({ review_id, open, handleClose }) => {
       aria-label="modal-modal-multiline"
     >
       <Box sx={style}>
-        <Typography id="modal-modal-title" mb={3} sx={{ color: 'black' }} variant="h5" component="h3">Evalua el corte y deja un comentario!</Typography>
+        <Typography
+          id="modal-modal-title"
+          mb={3}
+          sx={{ color: 'black' }}
+          variant="h5"
+          component="h3"
+        >
+          Evalua el corte y deja un comentario!
+        </Typography>
         <Box>
           <Rating
-            id='modal-modal-rating'
+            id="modal-modal-rating"
             name="simple-controlled"
-            className='rating'
+            className="rating"
             value={formData.value}
             onChange={(event, newValue) => {
-              handleData("value", newValue);
+              handleData('value', newValue);
             }}
           />
           {formError.value && (
-            <Typography variant='caption' sx={{ ml: 2, color: 'red' }}>{formError.value}</Typography>
+            <Typography variant="caption" sx={{ ml: 2, color: 'red' }}>
+              {formError.value}
+            </Typography>
           )}
         </Box>
         <TextField
           sx={{ mt: 2, mb: 3 }}
-          onChange={(event) => handleData("message", event.target.value)}
+          onChange={event => handleData('message', event.target.value)}
           id="modal-modal-multiline"
           label="Comentario"
           name="message"
-          type='text'
-          placeholder='Deja un comentario...'
+          type="text"
+          placeholder="Deja un comentario..."
           multiline
           fullWidth
           rows={4}
@@ -99,16 +129,23 @@ const ModalReview = ({ review_id, open, handleClose }) => {
         <Button
           sx={{ mr: 3 }}
           color="error"
-          variant='contained'
-          onClick={handleClose}>Cancelar
+          variant="contained"
+          onClick={handleClose}
+        >
+          Cancelar
         </Button>
-        <Button
-          variant='contained'
-          onClick={() => sendData(review_id)}>Agregar reseña
+        <Button variant="contained" onClick={() => sendData(reviewId)}>
+          Agregar reseña
         </Button>
       </Box>
     </Modal>
-  )
-}
+  );
+};
 
-export default ModalReview
+ModalReview.propTypes = {
+  reviewId: PropTypes.string,
+  open: PropTypes.bool,
+  handleClose: PropTypes.func,
+};
+
+export default ModalReview;
