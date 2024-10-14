@@ -1,4 +1,3 @@
-import React from 'react';
 import { loadingStyles } from './loading.style';
 
 const Loading = () => {

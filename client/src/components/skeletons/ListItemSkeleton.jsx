@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@mui/material';
-import React from 'react';
 
 const ListItemSkeleton = () => {
   return (

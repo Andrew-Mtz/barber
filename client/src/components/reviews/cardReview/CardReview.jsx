@@ -1,7 +1,6 @@
 import { Box, Rating, Typography } from '@mui/material';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import React from 'react';
 import './cardReview.css';
 import PropTypes from 'prop-types';
 

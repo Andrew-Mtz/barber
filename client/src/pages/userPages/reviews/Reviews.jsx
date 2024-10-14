@@ -23,6 +23,7 @@ const Reviews = () => {
   });
   const [reviews, setReviews] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = React.useState(false);
 
   const getReviews = React.useCallback(async () => {
