@@ -1,0 +1,43 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main  # Puedes cambiar 'main' por la rama que prefieras
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Clona el repositorio en el runner de GitHub Actions
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      # Configura la versión de Node.js (si tu frontend usa Node.js)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Instala dependencias del proyecto (frontend/backend)
+      - name: Install dependencies
+        run: npm install
+
+      # Compila la aplicación si es necesario
+      - name: Build application
+        run: npm run build
+
+      # Conéctate al Droplet de DigitalOcean usando SSH
+      - name: Deploy to DigitalOcean Droplet via SSH
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.DIGITALOCEAN_HOST }}   # IP de tu Droplet
+          username: ${{ secrets.DIGITALOCEAN_USER }} # Usuario (por ej. root)
+          key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}  # Clave SSH privada
+          passphrase: ${{ secrets.DIGITALOCEAN_SSH_PASSPHRASE }} # Frase de contraseña SSH (si aplica)
+          script: |
+            cd /barber
+            git pull origin main  # Obtiene los últimos cambios desde Git
+            docker-compose down    # Detiene y elimina contenedores antiguos
+            docker-compose up --build -d  # Levanta los nuevos contenedores
