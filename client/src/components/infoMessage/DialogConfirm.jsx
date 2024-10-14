@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import React from 'react';
 import PropTypes from 'prop-types';
 
 const DialogConfirm = ({

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import { styles } from './loginAlert.styles';
 import { useNavigate } from 'react-router-dom';

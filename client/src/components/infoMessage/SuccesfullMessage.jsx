@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import { styles } from './infoMessage.styles.js';
 import PropTypes from 'prop-types';
