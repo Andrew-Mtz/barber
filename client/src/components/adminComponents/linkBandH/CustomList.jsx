@@ -9,7 +9,6 @@ import {
   ListItemText,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 const CustomList = ({ title, items, onFunction, checks }) => {
   return (
