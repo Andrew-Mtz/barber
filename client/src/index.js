@@ -4,11 +4,9 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ValidationContext } from './context/ValidationContext';
-import { createTheme } from '@mui/material';
+// import { createTheme } from '@mui/material';
 
-const theme = createTheme({
-  
-})
+// const theme = createTheme({});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,7 +14,7 @@ root.render(
     <ValidationContext>
       <App />
     </ValidationContext>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

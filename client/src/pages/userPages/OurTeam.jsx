@@ -1,16 +1,16 @@
-import React from 'react'
+import React from 'react';
 import BarbersFull from '../../components/barbers/fullDataList/BarbersFull';
 import Loading from '../../components/loading/Loading';
 
-const baseUrl = process.env.REACT_APP_BASEURL
+const baseUrl = process.env.REACT_APP_BASEURL;
 
 const OurTeam = () => {
-  const [barbers, setBarbers] = React.useState(null)
-  const [loading, setLoading] = React.useState(false)
+  const [barbers, setBarbers] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    getBarbers()
-  }, [])
+    getBarbers();
+  }, []);
 
   const getBarbers = async () => {
     try {
@@ -18,25 +18,21 @@ const OurTeam = () => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          Accept: 'application/json',
+        },
       });
       const data = await response.json();
       if (data.error !== '') {
-        setBarbers(data.response)
-        return
+        setBarbers(data.response);
+        return;
       }
       setBarbers(data.response);
-      setLoading(true)
+      setLoading(true);
     } catch (error) {
-      console.error('Error al obtener los barberos:', error);
+      alert('Error al obtener los barberos:', error);
     }
-  }
-  return (
-    <>
-      {loading ? <BarbersFull barbers={barbers} /> : <Loading />}
-    </>
-  )
-}
+  };
+  return <>{loading ? <BarbersFull barbers={barbers} /> : <Loading />}</>;
+};
 
-export default OurTeam
+export default OurTeam;

@@ -14,57 +14,56 @@ import Schedules from '../../components/adminComponents/schedules/Schedules.jsx'
 import Emails from '../../components/adminComponents/Emails.jsx';
 import Income from '../../components/adminComponents/income/Income.jsx';
 
-
 export const cpMenu = [
   {
-    "title": "Administrar barberos",
-    "icon": GroupsIcon
+    title: 'Administrar barberos',
+    icon: GroupsIcon,
   },
   {
-    "title": "Administrar cortes",
-    "icon": ContentCutIcon
+    title: 'Administrar cortes',
+    icon: ContentCutIcon,
   },
   {
-    "title": "Vincular barberos con cortes",
-    "icon": JoinInnerIcon
+    title: 'Vincular barberos con cortes',
+    icon: JoinInnerIcon,
   },
   {
-    "title": "Administrar horarios",
-    "icon": EditCalendarIcon
+    title: 'Administrar horarios',
+    icon: EditCalendarIcon,
   },
   {
-    "title": "Enviar correos",
-    "icon": MailIcon
+    title: 'Enviar correos',
+    icon: MailIcon,
   },
   {
-    "title": "Ver ingresos",
-    "icon": MonetizationOnIcon
-  }
-]
+    title: 'Ver ingresos',
+    icon: MonetizationOnIcon,
+  },
+];
 
 export const cpBody = [
   {
-    "title": "Administrar barberos",
-    "component": Barbers
+    title: 'Administrar barberos',
+    component: Barbers,
   },
   {
-    "title": "Administrar cortes",
-    "component": Haircuts
+    title: 'Administrar cortes',
+    component: Haircuts,
   },
   {
-    "title": "Vincular barberos con cortes",
-    "component": LinkBarberAndHaircut
+    title: 'Vincular barberos con cortes',
+    component: LinkBarberAndHaircut,
   },
   {
-    "title": "Administrar horarios",
-    "component": Schedules
+    title: 'Administrar horarios',
+    component: Schedules,
   },
   {
-    "title": "Enviar correos",
-    "component": Emails
+    title: 'Enviar correos',
+    component: Emails,
   },
   {
-    "title": "Ver ingresos",
-    "component": Income
-  }
-]
+    title: 'Ver ingresos',
+    component: Income,
+  },
+];

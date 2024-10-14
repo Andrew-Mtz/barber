@@ -1,11 +1,12 @@
-import React from 'react'
-import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+import React from 'react';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import PropTypes from 'prop-types';
 
-const baseUrl = process.env.REACT_APP_BASEURL
+const baseUrl = process.env.REACT_APP_BASEURL;
 
 const FiltersReview = ({ filters, handleFilters }) => {
-  const [barbers, setBarbers] = React.useState([])
-  const [haircuts, setHaircuts] = React.useState([])
+  const [barbers, setBarbers] = React.useState([]);
+  const [haircuts, setHaircuts] = React.useState([]);
 
   const getBarbers = async () => {
     try {
@@ -13,19 +14,19 @@ const FiltersReview = ({ filters, handleFilters }) => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          Accept: 'application/json',
+        },
       });
       const data = await response.json();
       if (data !== '') {
-        setBarbers(data.response)
-        return
+        setBarbers(data.response);
+        return;
       }
-      setBarbers(data.response)
+      setBarbers(data.response);
     } catch (error) {
-      console.error('Error al obtener los barberos:', error);
+      alert('Error al obtener los barberos:', error);
     }
-  }
+  };
 
   const getHaircuts = async () => {
     try {
@@ -33,24 +34,24 @@ const FiltersReview = ({ filters, handleFilters }) => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          Accept: 'application/json',
+        },
       });
       const data = await response.json();
       if (data !== '') {
-        setHaircuts(data.response)
-        return
+        setHaircuts(data.response);
+        return;
       }
-      setHaircuts(data.response)
+      setHaircuts(data.response);
     } catch (error) {
-      console.error('Error al obtener los cortes de pelo:', error);
+      alert('Error al obtener los cortes de pelo:', error);
     }
   };
 
   React.useEffect(() => {
-    getHaircuts()
+    getHaircuts();
     getBarbers();
-  }, [])
+  }, []);
 
   return (
     <Box className={'search-parameters-reviews'}>
@@ -61,12 +62,10 @@ const FiltersReview = ({ filters, handleFilters }) => {
           id="barber"
           label="Por barbero"
           value={filters.barber}
-          onChange={(event) => handleFilters("barber", event)}
+          onChange={event => handleFilters('barber', event)}
         >
-          <MenuItem value={'all'}>
-            Todos
-          </MenuItem>
-          {barbers?.map((barber) => (
+          <MenuItem value={'all'}>Todos</MenuItem>
+          {barbers?.map(barber => (
             <MenuItem key={barber.id} value={barber.id}>
               {barber.name} {barber.last_name}
             </MenuItem>
@@ -81,12 +80,10 @@ const FiltersReview = ({ filters, handleFilters }) => {
           id="haircut"
           label="Por corte"
           value={filters.haircut}
-          onChange={(event) => handleFilters("haircut", event)}
+          onChange={event => handleFilters('haircut', event)}
         >
-          <MenuItem value={'all'}>
-            Todos
-          </MenuItem>
-          {haircuts?.map((haircut) => (
+          <MenuItem value={'all'}>Todos</MenuItem>
+          {haircuts?.map(haircut => (
             <MenuItem key={haircut.id} value={haircut.id}>
               {haircut.name}
             </MenuItem>
@@ -101,21 +98,20 @@ const FiltersReview = ({ filters, handleFilters }) => {
           id="type"
           label="Por tipo"
           value={filters.type}
-          onChange={(event) => handleFilters("type", event)}
+          onChange={event => handleFilters('type', event)}
         >
-          <MenuItem value={'default'}>
-            N/A
-          </MenuItem>
-          <MenuItem value={'recents'}>
-            Mas recientes
-          </MenuItem>
-          <MenuItem value={'most_value'}>
-            Mas valorados
-          </MenuItem>
+          <MenuItem value={'default'}>N/A</MenuItem>
+          <MenuItem value={'recents'}>Mas recientes</MenuItem>
+          <MenuItem value={'most_value'}>Mas valorados</MenuItem>
         </Select>
       </FormControl>
     </Box>
-  )
-}
+  );
+};
 
-export default FiltersReview
+FiltersReview.propTypes = {
+  filters: PropTypes.object,
+  handleFilters: PropTypes.func,
+};
+
+export default FiltersReview;

@@ -1,4 +1,5 @@
-import React from 'react'
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const AuthContext = React.createContext();
 
@@ -9,7 +10,7 @@ export const useAuth = () => {
   }
   return context; // Devuelve directamente el contexto
 };
-const baseUrl = process.env.REACT_APP_BASEURL
+const baseUrl = process.env.REACT_APP_BASEURL;
 
 export const ValidationContext = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -23,39 +24,38 @@ export const ValidationContext = ({ children }) => {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       });
       const dataResponse = await response.json();
-      console.log(dataResponse)
       if (dataResponse === true) return setIsLoggedIn(true);
       setIsLoggedIn(false);
       setIsAdmin(false);
       setIsBarber(false);
-      localStorage.removeItem("token");
-      localStorage.removeItem("userType");
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
     } catch (error) {
-      console.log(error)
+      alert(error);
     }
-  }
+  };
 
   const checkAuth = React.useCallback(async () => {
     const token = localStorage.getItem('token');
     const userType = localStorage.getItem('userType');
     if (token) {
       await checkToken();
-      if (userType === "barber") {
-        setIsBarber(true)
-      } else if (userType === "admin") {
-        setIsAdmin(true)
+      if (userType === 'barber') {
+        setIsBarber(true);
+      } else if (userType === 'admin') {
+        setIsAdmin(true);
       }
     } else {
       setIsLoggedIn(false);
-      setIsAdmin(false)
-      setIsBarber(false)
-      localStorage.removeItem("token")
-      localStorage.removeItem("userType")
+      setIsAdmin(false);
+      setIsBarber(false);
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
     }
   }, []);
 
@@ -73,8 +73,12 @@ export const ValidationContext = ({ children }) => {
   }, [checkAuth]);
 
   return (
-    <AuthContext.Provider value={{ checkAuth, isLoggedIn, isAdmin, isBarber }} >
+    <AuthContext.Provider value={{ checkAuth, isLoggedIn, isAdmin, isBarber }}>
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
+
+ValidationContext.propTypes = {
+  children: PropTypes.node,
+};

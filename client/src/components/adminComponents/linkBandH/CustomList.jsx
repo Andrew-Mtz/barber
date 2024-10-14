@@ -1,11 +1,21 @@
-import { Card, CardHeader, Checkbox, Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import React from 'react'
+import {
+  Card,
+  CardHeader,
+  Checkbox,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const CustomList = ({ title, items, onFunction, checks }) => {
   return (
     <Card>
       <CardHeader
-        className='card-header-link-list'
+        className="card-header-link-list"
         sx={{ px: 2, py: 1 }}
         title={title}
       />
@@ -19,7 +29,7 @@ const CustomList = ({ title, items, onFunction, checks }) => {
         component="div"
         role="list"
       >
-        {items?.map((value) => {
+        {items?.map(value => {
           const labelId = `list-${value.name}-label`;
           return (
             <ListItem
@@ -44,7 +54,14 @@ const CustomList = ({ title, items, onFunction, checks }) => {
         })}
       </List>
     </Card>
-  )
-}
+  );
+};
 
-export default CustomList
+CustomList.propTypes = {
+  title: PropTypes.string,
+  items: PropTypes.array,
+  onFunction: PropTypes.func,
+  checks: PropTypes.array,
+};
+
+export default CustomList;

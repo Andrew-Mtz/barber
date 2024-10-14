@@ -1,5 +1,5 @@
-import { Card, CardContent, CardMedia, Typography } from '@mui/material'
-import React from 'react'
+import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import PropTypes from 'prop-types';
 
 const InfoCard = ({ url, title, text }) => {
   return (
@@ -19,7 +19,13 @@ const InfoCard = ({ url, title, text }) => {
         </Typography>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default InfoCard
+InfoCard.propTypes = {
+  url: PropTypes.string,
+  title: PropTypes.string,
+  text: PropTypes.string,
+};
+
+export default InfoCard;

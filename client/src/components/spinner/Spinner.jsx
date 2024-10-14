@@ -1,12 +1,13 @@
-import React from 'react'
-import './spinner.css'
+import React from 'react';
+import './spinner.css';
+import PropTypes from 'prop-types';
 
-const Spinner = ({styles}) => {
+const Spinner = ({ styles }) => {
+  return <div style={styles} className="loading-spinner"></div>;
+};
 
+Spinner.propTypes = {
+  styles: PropTypes.object,
+};
 
-  return (
-    <div style={styles} className='loading-spinner'></div>
-  )
-}
-
-export default Spinner
+export default Spinner;

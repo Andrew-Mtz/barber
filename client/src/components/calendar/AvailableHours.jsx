@@ -1,11 +1,14 @@
-import { Box, Button, Typography } from '@mui/material'
-import React from 'react'
+import { Box, Button, Typography } from '@mui/material';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 const AvailableHours = ({
-  title, schedules, onHourSelect, selectedId, selectedDayId, day, disUnavailable
+  title,
+  schedules,
+  onHourSelect,
+  selectedId,
+  disUnavailable,
 }) => {
-
   const buttonStyle = {
     padding: '0.5em 1.5em',
     textAlign: 'center',
@@ -23,37 +26,46 @@ const AvailableHours = ({
     },
   };
 
-  const isSelected = (id) => {
-    if (typeof (selectedId) === 'number') {
+  const isSelected = id => {
+    if (typeof selectedId === 'number') {
       return selectedId === id;
-    };
+    }
     return selectedId?.includes(id);
   };
 
   return (
     <Box sx={{ paddingTop: 3, flexGrow: 1 }}>
-      <Typography variant='h6' component="p" textAlign={'center'}>{title}</Typography>
+      <Typography variant="h6" component="p" textAlign={'center'}>
+        {title}
+      </Typography>
       {schedules?.length > 0 && (
         <>
-
           <Box sx={scheduleContainer}>
-            {schedules.map((schedule) =>
+            {schedules.map(schedule => (
               <Box key={schedule.id}>
                 <Button
                   disabled={disUnavailable && schedule.status !== 1}
-                  variant={isSelected(schedule.id) ? "contained" : "outlined"}
+                  variant={isSelected(schedule.id) ? 'contained' : 'outlined'}
                   sx={buttonStyle}
-                  onClick={() => onHourSelect(schedule.id, schedule.hour, schedule.status)}
-                >{schedule.hour}
+                  onClick={() =>
+                    onHourSelect(schedule.id, schedule.hour, schedule.status)
+                  }
+                >
+                  {schedule.hour}
                 </Button>
               </Box>
-            )}
+            ))}
           </Box>
-        </>)}
-      {schedules?.length === 0 && <Typography variant='body1' component="p" textAlign={'center'} mb={3}>No hay horarios disponibles para esta fecha</Typography>}
+        </>
+      )}
+      {schedules?.length === 0 && (
+        <Typography variant="body1" component="p" textAlign={'center'} mb={3}>
+          No hay horarios disponibles para esta fecha
+        </Typography>
+      )}
     </Box>
-  )
-}
+  );
+};
 
 AvailableHours.propTypes = {
   title: PropTypes.string,
@@ -64,15 +76,13 @@ AvailableHours.propTypes = {
     PropTypes.number,
     PropTypes.arrayOf(PropTypes.number),
   ]).isRequired,
-  selectedDayId: PropTypes.number,
-  day: PropTypes.object,
-  disUnavailable: PropTypes.bool
+  disUnavailable: PropTypes.bool,
 };
 
 AvailableHours.defaultProps = {
   title: 'Horarios disponibles',
   schedules: [],
-  disUnavailable: false
+  disUnavailable: false,
 };
 
-export default AvailableHours
+export default AvailableHours;
