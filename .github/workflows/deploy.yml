@@ -20,13 +20,15 @@ jobs:
         with:
           node-version: '18'
 
-      # Instala dependencias del proyecto (frontend/backend)
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd client # Navega a la carpeta donde está package.json
+          npm install
 
-      # Compila la aplicación si es necesario
       - name: Build application
-        run: npm run build
+        run: |
+          cd client # Navega a la carpeta donde está package.json
+          npm run build
 
       # Conéctate al Droplet de DigitalOcean usando SSH
       - name: Deploy to DigitalOcean Droplet via SSH
