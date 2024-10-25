@@ -37,7 +37,7 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: ${{ secrets.DIGITALOCEAN_USER }}
           key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
-          passphrase: ${{ secrets.DIGITALOCEAN_SSH_PASSPHRASE }}
+          # passphrase: ${{ secrets.DIGITALOCEAN_SSH_PASSPHRASE }}
           script: |
             cd /barber
             git pull origin main
