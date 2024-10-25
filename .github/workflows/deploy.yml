@@ -44,3 +44,4 @@ jobs:
             docker-compose down
             docker-compose up --build -d
           debug: true
+          use_insecure_cipher: true
