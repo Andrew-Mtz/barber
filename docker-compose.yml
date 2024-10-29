@@ -3,10 +3,9 @@ services:
   frontend:
     build: ./client
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
-
   backend:
     build: ./backend
     ports:
@@ -15,7 +14,6 @@ services:
       - db
     env_file:
       - .env
-
   db:
     image: postgres:13
     env_file:
@@ -24,6 +22,5 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
 volumes:
   postgres_data:
