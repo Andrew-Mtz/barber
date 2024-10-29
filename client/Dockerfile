@@ -1,25 +1,23 @@
-# Fase de construcción
-FROM node:18-alpine AS build
+# Usa una imagen base de Node.js
+FROM node:16
+
+# Define el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia los archivos necesarios para instalar dependencias
+# Copia el package.json y package-lock.json (si existe) para instalar dependencias
 COPY package*.json ./
+
+# Instala las dependencias usando npm
 RUN npm install
 
-# Copia todo el código de la aplicación
+# Copia el resto del código del frontend a la imagen
 COPY . .
 
-# Aumenta el límite de memoria para evitar errores de falta de memoria en la construcción
-RUN node --max-old-space-size=1024 node_modules/.bin/react-scripts build
+# Genera una versión optimizada del frontend
+RUN npm run build
 
-# Fase de producción: usar Nginx para servir los archivos
-FROM nginx:alpine
+# Expone el puerto 3000 para el servicio de archivos estáticos
+EXPOSE 3000
 
-# Copiar los archivos de la carpeta build generada en la fase anterior a Nginx
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Exponer el puerto 80 para acceder al servidor
-EXPOSE 80
-
-# Comando para ejecutar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para servir los archivos estáticos del frontend
+CMD ["npx", "serve", "-s", "build"]
